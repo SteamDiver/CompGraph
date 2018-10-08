@@ -1,0 +1,64 @@
+﻿<Window x:Class="Task4.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Task4"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="694.756" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Slider Height="25" Minimum="0" Maximum="360"
+                Value="{Binding ElementName=Rotate, Path = Angle}" />
+        <Viewport3D Grid.Row="1" Margin="0,5.2,-0.4,-0.2">
+            <Viewport3D.Camera>
+                <PerspectiveCamera Position="0.5, 2, 5" LookDirection="0,-2,-5"  />
+            </Viewport3D.Camera>
+            <Viewport3D.Children>
+                <ModelVisual3D>
+                    <ModelVisual3D.Content>
+                        <PointLight x:Name="Light1" Color="BlueViolet"  Position="5,5,0.5" Range="10">
+                        </PointLight>
+                    </ModelVisual3D.Content>
+                </ModelVisual3D>
+                <ModelVisual3D>
+                    <ModelVisual3D.Content>
+                        <PointLight Color="Red" x:Name="Light2" Range="10" Position="-5, 5, 0.5">
+                        </PointLight>
+                    </ModelVisual3D.Content>
+                </ModelVisual3D>
+                <ModelVisual3D>
+                    <ModelVisual3D.Content>
+                        <GeometryModel3D>
+                            <GeometryModel3D.Geometry>
+                                <MeshGeometry3D x:Name="D" 
+                                                Positions="0,0,0 1,0,0 0,1,0 1,1,0 
+                              0,0,1 1,0,1 0,1,1 1,1,1" 
+                                                TriangleIndices="0,2,1 1,2,3 0,4,2 2,4,6
+                         0,1,4 1,5,4 1,7,5 1,3,7
+                         4,5,6 7,6,5 2,6,3 3,6,7"
+                                                />
+                            </GeometryModel3D.Geometry>
+                            <GeometryModel3D.Material>
+                                <MaterialGroup>
+                                    <DiffuseMaterial Brush="White"/>
+                                    <SpecularMaterial Brush="White" SpecularPower="8"/>
+                                </MaterialGroup>
+                            </GeometryModel3D.Material>
+                        </GeometryModel3D>
+                    </ModelVisual3D.Content>
+                    <ModelVisual3D.Transform>
+                        <RotateTransform3D CenterX="0.5" CenterY="0.5" CenterZ="0.5">
+                            <RotateTransform3D.Rotation>
+                                <AxisAngleRotation3D x:Name="Rotate" Axis="1 1 0" Angle="0"  />
+                            </RotateTransform3D.Rotation>
+                        </RotateTransform3D>
+                    </ModelVisual3D.Transform>
+                </ModelVisual3D>
+            </Viewport3D.Children>
+        </Viewport3D>
+    </Grid>
+</Window>
