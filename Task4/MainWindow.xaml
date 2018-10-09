@@ -62,9 +62,7 @@
                     <BeginStoryboard>
                         <Storyboard>
 
-                            <!-- This animation animates the Rotation property of the RotateTransform
-                       causing the 3D shape to rotate and wobble as the rotation angle and 
-                       axis are animated. -->
+                            <!-- Анимация -->
                             <Rotation3DAnimation
                                 Storyboard.TargetName="Rotate" 
                                 Storyboard.TargetProperty="Rotation"  RepeatBehavior="Forever" Duration="0:0:5">
