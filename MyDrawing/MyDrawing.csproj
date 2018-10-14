@@ -45,7 +45,7 @@
     <Compile Include="Drawer.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Line.cs" />
-    <Compile Include="IElement.cs" />
+    <Compile Include="UiElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

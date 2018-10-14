@@ -25,7 +25,7 @@ namespace Task3WinForms
         {
             InitializeComponent();
             bmp = new Bitmap(Field.Width, Field.Height);            
-            _drawer = new Drawer(Field, bmp, DrawType.Custom);
+            _drawer = new Drawer(Field, bmp, DrawType.Standart);
         }
 
         private void NewLineChB_CheckedChanged(object sender, EventArgs e)

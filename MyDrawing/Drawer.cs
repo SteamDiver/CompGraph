@@ -34,33 +34,40 @@ namespace MyDrawing
 
         public void MoveObject(UiElement l1, UiElement l2)
         {
-            Timer T = new Timer(1);
-            var delta = 0.05f;
-
-            T.Elapsed += (sender, args) =>
+            if (l1.Points.Count == l2.Points.Count)
             {
-                T.Enabled = false;
+                Timer T = new Timer(1);
+                var delta = 0.1f;
+
+                T.Elapsed += (sender, args) =>
+                {
+                    T.Enabled = false;
                     for (int i = 0; i < l1.Points.Count; i++)
                     {
                         var point = l1.Points[i];
                         point.X += (l2.Points[i].X - l1.Points[i].X) * delta;
                         point.Y += (l2.Points[i].Y - l1.Points[i].Y) * delta;
 
-                        if(point.X > delta && point.Y > delta)
+                        if (point.X > delta && point.Y > delta)
                             l1.Points[i] = point;
                     }
+
                     _g.Clear(Color.White);
                     Draw(l1);
-                T.Enabled = true;
+                    T.Enabled = true;
 
-                if (Math.Abs(l2.Points[0].X - l1.Points[0].X) < delta)
-                {
-                    T.Stop();
-                    //G.Dispose();
-                }
+                    if (Math.Abs(l2.Points[0].X - l1.Points[0].X) < delta)
+                    {
+                        T.Stop();
+                    }
 
-            };
-            T.Start();
+                };
+                T.Start();
+            }
+            else
+            {
+                throw new Exception("Объекты должны содержать одинаковое количество точек");
+            }
         }
 
         public void Dispose()
