@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MyDrawing;
+using MyDrawing.VisualObjects;
 
 namespace Tests
 {

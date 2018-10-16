@@ -44,7 +44,7 @@
   <ItemGroup>
     <Compile Include="Drawer.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="Line.cs" />
+    <Compile Include="VisualObjects\Line.cs" />
     <Compile Include="UiElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

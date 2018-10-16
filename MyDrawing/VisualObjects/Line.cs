@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MyDrawing
+namespace MyDrawing.VisualObjects
 {
     public class Line : UiElement
     {
@@ -80,7 +76,6 @@ namespace MyDrawing
                     }
                 }
             }
-
         }
 
         /// <summary>
