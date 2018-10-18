@@ -9,8 +9,8 @@ namespace MyDrawing
 {
     public abstract class UiElement
     {
-        public Brush Brush { get; set; }
+        public Color Color { get; set; }
         public List<PointF> Points { get; set; }
-        internal abstract void Draw(DrawType drawType, Graphics g);
+        internal abstract void Draw(DrawType drawType, Bitmap b);
     }
 }

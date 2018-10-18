@@ -12,7 +12,7 @@ namespace MyDrawing
 {
     public class Drawer
     {
-        public DrawType DrawType { get; }
+        public DrawType DrawType { get; set; }
         private readonly PictureBox _field;
         private readonly Bitmap _bmp;
         private readonly Graphics _g;
@@ -28,7 +28,7 @@ namespace MyDrawing
 
         public void Draw(UiElement element)
         {
-            element.Draw(DrawType, _g);
+            element.Draw(DrawType, _bmp);
             _field.Image = _bmp;
         }
 

@@ -11,21 +11,21 @@ namespace MyDrawing.VisualObjects
         /// </summary>
         public float Width { get; set; }
 
-        public Line(List<PointF> points, Brush color, float width)
+        public Line(List<PointF> points, Color color, float width)
         {
             Points = points;
-            Brush = color;
+            Color = color;
             Width = width;
         }
 
-        public Line(PointF p1, PointF p2, Brush color, float width)
+        public Line(PointF p1, PointF p2, Color color, float width)
         {
             Points = new List<PointF>()
             {
                 p1, p2
             };
 
-            Brush = color;
+            Color = color;
             Width = width;
         }
 
@@ -34,15 +34,16 @@ namespace MyDrawing.VisualObjects
         /// </summary>
         /// <param name="type">DrawType</param>
         /// <param name="g"></param>
-        internal override void Draw(DrawType type, Graphics g)
+        internal override void Draw(DrawType type, Bitmap b)
         {
             switch (type)
             {
                 case DrawType.Standart:
-                    g.DrawLines(new Pen(Brush, Width), Points.ToArray());
+                    var g = Graphics.FromImage(b);
+                    g.DrawLines(new Pen(Color, Width), Points.ToArray());
                     break;
                 case DrawType.Custom:
-                    DrawCustomLine(Points, g);
+                    DrawCustomLine(Points, b);
                     break;
             }
         }
@@ -83,18 +84,18 @@ namespace MyDrawing.VisualObjects
         /// </summary>
         /// <param name="points"></param>
         /// <param name="g"></param>
-        private void DrawCustomLine(List<PointF> points, Graphics g)
+        private void DrawCustomLine(List<PointF> points, Bitmap b)
         {
             if (points.Count > 1)
             {
                 for (int i = 1; i < points.Count; i++)
                 {
-                    DrawBresenhamLine(points[i-1], points[i], g);
+                    DrawBresenhamLine(points[i-1], points[i], b);
                 }
             }
         }
 
-        private void DrawBresenhamLine(PointF start, PointF stop, Graphics g)
+        private void DrawBresenhamLine(PointF start, PointF stop, Bitmap bmp)
         {
             int dx, dy, incx, incy, pdx, pdy, es, el, err;
             float x, y;
@@ -139,7 +140,7 @@ namespace MyDrawing.VisualObjects
             x = start.X;
             y = start.Y;
             err = el / 2;
-            g.DrawRectangle(new Pen(Brush), x, y, 1,1);//ставим первую точку
+            bmp.SetPixel((int)x, (int)y, Color);//ставим первую точку
                                    //все последующие точки возможно надо сдвигать, поэтому первую ставим вне цикла
 
             for (int t = 0; t < el; t++)//идём по всем точкам, начиная со второй и до последней
@@ -157,7 +158,7 @@ namespace MyDrawing.VisualObjects
                     y += pdy;//цикл идёт по иксу; сдвинуть вверх или вниз, если по y
                 }
 
-                g.DrawRectangle(new Pen(Brush), x, y, 1, 1);
+                bmp.SetPixel((int) x, (int) y, Color);
             }
         }
     }

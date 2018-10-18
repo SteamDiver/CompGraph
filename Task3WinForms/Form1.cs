@@ -16,8 +16,8 @@ namespace Task3WinForms
     {
         private Bitmap bmp;
         private bool _isDown = false;
-        private Line _l1 = new Line(new List<PointF>(), Brushes.Blue, 2);
-        private Line _l2 = new Line(new List<PointF>(), Brushes.DarkRed, 2);
+        private Line _l1 = new Line(new List<PointF>(), Color.Blue, 2);
+        private Line _l2 = new Line(new List<PointF>(), Color.DarkRed, 2);
         private Line _lineToUse;
         private bool _newLine = false;
         private readonly Drawer _drawer;
@@ -74,8 +74,8 @@ namespace Task3WinForms
         private void Clear_Click(object sender, EventArgs e)
         {
             _drawer.Clear();
-            _l1 = new Line(new List<PointF>(), Brushes.Blue, 2);
-            _l2 = new Line(new List<PointF>(), Brushes.DarkRed, 2);
+            _l1 = new Line(new List<PointF>(), Color.Blue, 2);
+            _l2 = new Line(new List<PointF>(), Color.DarkRed, 2);
         }
     }
 }
