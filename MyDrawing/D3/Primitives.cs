@@ -105,11 +105,11 @@ namespace MyDrawing.D3
         public Vertex V1;
         public Vertex V2;
         public Vertex V3;
-        public int C1;
-        public int C2;
-        public int C3;
+        public Vertex2D C1;
+        public Vertex2D C2;
+        public Vertex2D C3;
 
-        public Triangle(Vertex v1, Vertex v2, Vertex v3, int c1, int c2, int c3)
+        public Triangle(Vertex v1, Vertex v2, Vertex v3, Vertex2D c1, Vertex2D c2, Vertex2D c3)
         {
             V1 = v1;
             V2 = v2;
@@ -126,12 +126,12 @@ namespace MyDrawing.D3
         public Vertex V2;
         public Vertex V3;
         public Vertex V4;
-        public int C1;
-        public int C2;
-        public int C3;
-        public int C4;
+        public Vertex2D C1;
+        public Vertex2D C2;
+        public Vertex2D C3;
+        public Vertex2D C4;
 
-        public Quad(Vertex v1, Vertex v2, Vertex v3, Vertex v4, int c1, int c2, int c3, int c4)
+        public Quad(Vertex v1, Vertex v2, Vertex v3, Vertex v4, Vertex2D c1, Vertex2D c2, Vertex2D c3, Vertex2D c4)
         {
             V1 = v1;
             V2 = v2;

@@ -49,8 +49,7 @@ namespace MyDrawing.D3
                 var tri = new int[3];
                 var tex = new int[4];
                 var quad = new int[4];
-                string[] array = new string[3];
-                List<string> list;
+                string[] array;
 
 
                 var regPattern = @"([v]?[vt]?[f]?) ( *.*)";
@@ -98,7 +97,7 @@ namespace MyDrawing.D3
                             case 'f':
                                 {
                                     line = line.Trim('f', ' ');
-                                    list = new List<string>(line.Split(new[]{' ', '/'}, StringSplitOptions.RemoveEmptyEntries));
+                                    var list = new List<string>(line.Split(new[]{' ', '/'}, StringSplitOptions.RemoveEmptyEntries));
                                     if (list.Count == 9)
                                     {
                                         for (int i = 0, j = 0; i < 3 && j < list.Count; i++, j += 3)
@@ -106,7 +105,7 @@ namespace MyDrawing.D3
                                             tri[i] = int.Parse(list[j]);
                                             tex[i] = int.Parse(list[j + 1]);
                                         }
-                                        Triangle t = new Triangle(Vertices[tri[0] - 1], Vertices[tri[1] - 1], Vertices[tri[2] - 1], tex[0], tex[1], tex[2]);
+                                        Triangle t = new Triangle(Vertices[tri[0] - 1], Vertices[tri[1] - 1], Vertices[tri[2] - 1], TextureCoordinates[tex[0] - 1], TextureCoordinates[tex[1] - 1], TextureCoordinates[tex[2] - 1]);
                                         Triangles.Add(t);
                                     }
 
@@ -117,7 +116,7 @@ namespace MyDrawing.D3
                                             quad[i] = int.Parse(list[j]);
                                             tex[i] = int.Parse(list[j + 1]);
                                         }
-                                        Quad q = new Quad(Vertices[quad[0]], Vertices[quad[1]], Vertices[quad[2]], Vertices[quad[3]], tex[0], tex[1], tex[2], tex[3]);
+                                        Quad q = new Quad(Vertices[quad[0]], Vertices[quad[1]], Vertices[quad[2]], Vertices[quad[3]], TextureCoordinates[tex[0] - 1], TextureCoordinates[tex[1] - 1], TextureCoordinates[tex[2] - 1], TextureCoordinates[tex[3] - 1]);
                                         Quads.Add(q);
                                     }
                                 }
@@ -395,14 +394,12 @@ namespace MyDrawing.D3
             return newColor;
         }
 
-        private Color FindTexel(int c1, int c2, int c3, double a, double b, double g)
+        private Color FindTexel(Vertex2D c1, Vertex2D c2, Vertex2D c3, double a, double b, double g)
         {
             var w = TextureMap.Width;
             var h = TextureMap.Height;
-            var u = a * TextureCoordinates[c1 - 1].U + b * TextureCoordinates[c2 - 1].U +
-                    g * TextureCoordinates[c3 - 1].U;
-            var v = a * (1 - TextureCoordinates[c1 - 1].V) + b * (1 - TextureCoordinates[c2 - 1].V) +
-                    g * (1 - TextureCoordinates[c3 - 1].V);
+            var u = a * c1.U + b * c2.U + g * c3.U;
+            var v = a * (1 - c1.V) + b * (1 - c2.V) + g * (1 - c3.V);
             var texel = TextureMap.GetPixel((int)(u * w), (int)(v * h));
             return texel;
         } //Нахождение соответствующего пикселя на текстуре
@@ -471,7 +468,7 @@ namespace MyDrawing.D3
                     }
         } //Метод рисования модели(раcтеризация всех полигонов модели со сглаживанием)
 
-        private void CompleteTriangleDraw(Vertex v1, Vertex v2, Vertex v3, int c1, int c2, int c3, Vector v,
+        private void CompleteTriangleDraw(Vertex v1, Vertex v2, Vertex v3, Vertex2D c1, Vertex2D c2, Vertex2D c3, Vector v,
             ref float[,] zBuffer)
         {
             double a = 0, b = 0, g = 0, A = v.X, B = v.Y, C = v.Z;
