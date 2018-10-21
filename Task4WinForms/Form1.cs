@@ -67,11 +67,11 @@ namespace Task4WinForms
                 vector.Add(values1);
                 double[] values2 = {1, 1, 1};
                 vector.Add(values2);
-                double[] values3 = {0, 0, 0};
+                double[] values3 = { XRotate.Value / 10d, 0, 0};
                 vector.Add(values3);
 
                 Model alex = new Model();
-                PictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                PictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
                 PictureBox.Image = alex.Draw(path1, path2, vector);
             
             

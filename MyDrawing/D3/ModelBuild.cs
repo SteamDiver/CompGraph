@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 
 //using ImageMagick;
 
@@ -13,8 +13,7 @@ namespace MyDrawing.D3
     {
         public List<Vertex> Vertices = new List<Vertex>(); //Точки модели
 
-        public List<Triangle>
-            Triangles = new List<Triangle>(); //Треугольники модели. Каждый треугольник хранит индексы его трех вершин.
+        public List<Triangle> Triangles = new List<Triangle>(); //Треугольники модели.
 
         public List<Quad> Quads = new List<Quad>();
         public List<Vector> Vectors = new List<Vector>(); //Векторы треугольников(нормализованные).
@@ -120,8 +119,8 @@ namespace MyDrawing.D3
                                         tex[i] = int.Parse(array[j + 1]);
                                     }
 
-                                    Quad q = new Quad(Vertices[quad[0]], Vertices[quad[1]], Vertices[quad[2]],
-                                        Vertices[quad[3]], TextureCoordinates[tex[0] - 1],
+                                    Quad q = new Quad(Vertices[quad[0] - 1], Vertices[quad[1] - 1], Vertices[quad[2] - 1],
+                                        Vertices[quad[3] - 1], TextureCoordinates[tex[0] - 1],
                                         TextureCoordinates[tex[1] - 1], TextureCoordinates[tex[2] - 1],
                                         TextureCoordinates[tex[3] - 1]);
                                     Quads.Add(q);
@@ -415,37 +414,6 @@ namespace MyDrawing.D3
 
         //========================РАЗЛИЧНЫЕ ТИПЫ ОТРИСОВКИ ТРЕУГОЛЬНИКА=====================================
 
-        private void DiffuseLightningTriangleDraw()
-        {
-            var myMap = new Bitmap(720, 660);
-            ModelBitmap = myMap;
-            var horizontalShift = ModelBitmap.Width / 2;
-            var verticalShift = (int) (ModelBitmap.Height * 0.6);
-            FindNormal();
-            NormalizeAllVertexNormals();
-            double cos = 0;
-            var i = 0;
-            var newColor = Color.Empty;
-            var modelColor = Color.LightPink;
-            var light = new Vector(0, 0, 1);
-            foreach (var t in Triangles)
-            {
-                var scalarMult = Vectors[i].Z * light.Z;
-                cos = scalarMult / (Math.Sqrt(Vectors[i].X * Vectors[i].X + Vectors[i].Y * Vectors[i].Y +
-                                              Vectors[i].Z * Vectors[i].Z) + 1);
-                if (scalarMult >= 0)
-                    if (Math.Abs(cos) > 0 && Math.Abs(cos - 1) > 0)
-                        newColor = Color.FromArgb((int) (modelColor.R * cos), (int) (modelColor.G * cos),
-                            (int) (modelColor.B * cos));
-                    else if (Math.Abs(cos) < 1e-10)
-                        newColor = Color.FromArgb(0, 0, 0); //90 deg
-                    else if (Math.Abs(cos - 1) < 1e-10)
-                        newColor = modelColor; //0 deg
-
-                i++;
-            }
-        } //Метод рисования модели(раcтеризация всех полигонов модели)
-
         private void SmoothTriangleDraw(Vertex v1, Vertex v2, Vertex v3)
         {
             var horizontalShift = ModelBitmap.Width / 2;
@@ -536,16 +504,16 @@ namespace MyDrawing.D3
         {
             var myMap = new Bitmap(Width, Height);
             ModelBitmap = myMap;
-            var horizontalShift = Width / 2;
-            var verticalShift = (int) (Height * 0.6);
-            //var zBuffer = new float[3000, 3000];
-            //InitializeZBuffer(ref zBuffer);
+            Graphics.FromImage(ModelBitmap).SmoothingMode = SmoothingMode.AntiAlias;
+
+            var zBuffer = new float[3000, 3000];
+            InitializeZBuffer(ref zBuffer);
             FindNormal();
             NormalizeAllVertexNormals();
             var i = 0;
             foreach (var t in Triangles)
-                //CompleteTriangleDraw(t.V1, t.V2, t.V3, t.C1, t.C2, t.C3, Vectors[i++], ref zBuffer);
-                SmoothTriangleDraw(t.V1, t.V2, t.V3);
+                CompleteTriangleDraw(t.V1, t.V2, t.V3, t.C1, t.C2, t.C3, Vectors[i++], ref zBuffer);
+                //SmoothTriangleDraw(t.V1, t.V2, t.V3);
         }
 
         #endregion
