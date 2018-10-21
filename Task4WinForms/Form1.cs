@@ -71,7 +71,7 @@ namespace Task4WinForms
                 double[] values3 = {0, 0, 0};
                 vector.Add(values3);
 
-                ModelBuild alex = new ModelBuild();
+                Model alex = new Model();
                 PictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                 PictureBox.Image = alex.Draw(path1, path2, vector);
             }

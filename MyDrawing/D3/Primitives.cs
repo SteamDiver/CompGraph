@@ -75,14 +75,14 @@ namespace MyDrawing.D3
         /// Нормализация вектора(каждую компоненту делим на длину вектора)
         /// </summary>
         /// <param name="v"></param>
-        public static void Normalize(ref Vector v)
+        public void Normalize()
         {
-            var magnitude = Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
-            if (Math.Abs(magnitude) > 0)
+            var magnitude = Magnitude;
+            if (magnitude > 0)
             {
-                v.X /= magnitude;
-                v.Y /= magnitude;
-                v.Z /= magnitude;
+                X /= magnitude;
+                Y /= magnitude;
+                Z /= magnitude;
             }
         }
 

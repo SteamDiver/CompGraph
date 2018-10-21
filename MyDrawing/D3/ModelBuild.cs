@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace MyDrawing.D3
 {
-    public class ModelBuild
+    public class Model
     {
 
         public List<Vertex> Vertices; //Точки модели
@@ -149,6 +149,12 @@ namespace MyDrawing.D3
 
         //=============================РАБОТА С ВЕКТОРАМИ===================================
 
+        /// <summary>
+        /// Построение вектора по двум вершинам
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <returns></returns>
         private Vector GetVector(int v1, int v2)
         {
             var tempVector = new Vector
@@ -158,8 +164,14 @@ namespace MyDrawing.D3
                 Z = Vertices[v1 - 1 ].Z - Vertices[v2 - 1].Z
             };
             return tempVector;
-        } //Построение вектора по двум вершинам
+        }
 
+        /// <summary>
+        /// Построение ненормализованной нормали треугольника по двум векторам
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <returns></returns>
         private Vector GetNormal(Vector v1, Vector v2)
         {
             var normal = new Vector
@@ -169,8 +181,11 @@ namespace MyDrawing.D3
                 Z = v1.X * v2.Y - v1.Y * v2.X
             };
             return normal;
-        } //Построение ненормализованной нормали треугольника по двум векторам
+        }
 
+        /// <summary>
+        /// Нахождение нормалей для всех треугольников модели
+        /// </summary>
         private void FindNormal()
         {
             var vectorsTemp = new List<Vector>();
@@ -179,14 +194,13 @@ namespace MyDrawing.D3
                 var vector1 = GetVector(t.V1, t.V2);
                 var vector2 = GetVector(t.V2, t.V3);
                 var normal = GetNormal(vector1, vector2);
-                //Vector.Magnitude(normal);
-                Vector.Normalize(ref normal);
+                normal.Normalize();
                 GiveNormalToEachVertex(t.V1, t.V2, t.V3, normal);
                 vectorsTemp.Add(normal);
             }
 
             Vectors = vectorsTemp;
-        } //Нахождение нормалей для всех треугольников модели
+        } 
 
         private void GiveNormalToEachVertex(int v1, int v2, int v3, Vector normal)
         {
@@ -197,10 +211,8 @@ namespace MyDrawing.D3
 
         private void NormalizeAllVertexNormals()
         {
-            //   double m = 0;
             foreach (var v in Vertices)
-                // m = FindMagnitude(v.vNormal);
-                Vector.Normalize(ref v.VNormal);
+                v.VNormal.Normalize();
         } //Нормализуем векторы(нормали) для каждой вершины модели
 
         #endregion
@@ -354,7 +366,7 @@ namespace MyDrawing.D3
         {
             var newColor = Color.Empty;
             var lightVector = new Vector(0, 0, 1);
-            Vector.Normalize(ref lightVector);
+            lightVector.Normalize();
             Vector resNorm; //нормаль для данного пикселя
             resNorm.X = v1.X * a + v2.X * b + v3.X * g;
             resNorm.Y = v1.Y * a + v2.Y * b + v3.Y * g;
@@ -379,9 +391,9 @@ namespace MyDrawing.D3
             var cosVal = Vector.CosCalc(resNorm, lightVector);
             cosVal = Math.Abs(cosVal);
             var viewVector = eyeVector - pixelPosWorld;
-            Vector.Normalize(ref viewVector);
+            viewVector.Normalize();
             var reflectVector = 2 * lightVector * (-resNorm) * resNorm + lightVector;
-            Vector.Normalize(ref reflectVector);
+            reflectVector.Normalize();
             var specLight = reflectVector * viewVector;
             specLight = Math.Abs(specLight);
             var materialCoef = 0.1;
