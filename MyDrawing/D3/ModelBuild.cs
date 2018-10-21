@@ -12,11 +12,11 @@ namespace MyDrawing.D3
     public class Model
     {
 
-        public List<Vertex> Vertices; //Точки модели
-        public List<Triangle> Triangles; //Треугольники модели. Каждый треугольник хранит индексы его трех вершин.
-        public List<Quad> Quads;
-        public List<Vector> Vectors; //Векторы треугольников(нормализованные).
-        public List<Vertex2D> TextureCoordinates;
+        public List<Vertex> Vertices = new List<Vertex>(); //Точки модели
+        public List<Triangle> Triangles = new List<Triangle>(); //Треугольники модели. Каждый треугольник хранит индексы его трех вершин.
+        public List<Quad> Quads = new List<Quad>();
+        public List<Vector> Vectors = new List<Vector>(); //Векторы треугольников(нормализованные).
+        public List<Vertex2D> TextureCoordinates = new List<Vertex2D>();
         public Bitmap ModelBitmap;
         public Bitmap TextureMap;
         public int Width;
@@ -45,10 +45,6 @@ namespace MyDrawing.D3
             using (var myStream = new FileStream(pathObjFile, FileMode.Open))
             {
                 var myReader = new StreamReader(myStream);
-                var verticesTemp = new List<Vertex>();
-                var quadsTemp = new List<Quad>();
-                var trianglesTemp = new List<Triangle>();
-                var textureCoordinatesTemp = new List<Vertex2D>();
                 var coord = new double[3];
                 var tri = new int[3];
                 var tex = new int[4];
@@ -79,7 +75,7 @@ namespace MyDrawing.D3
                                         }
 
                                         Vertex v = new Vertex(coord[0], coord[1], coord[2]);
-                                        verticesTemp.Add(v);
+                                        Vertices.Add(v);
                                     }
                                     else
                                     {
@@ -93,7 +89,7 @@ namespace MyDrawing.D3
                                             }
 
                                             Vertex2D v = new Vertex2D(coord[0], coord[1]);
-                                            textureCoordinatesTemp.Add(v);
+                                            TextureCoordinates.Add(v);
                                         }
                                     }
                                     break;
@@ -110,8 +106,8 @@ namespace MyDrawing.D3
                                             tri[i] = int.Parse(list[j]);
                                             tex[i] = int.Parse(list[j + 1]);
                                         }
-                                        Triangle t = new Triangle(tri[0], tri[1], tri[2], tex[0], tex[1], tex[2]);
-                                        trianglesTemp.Add(t);
+                                        Triangle t = new Triangle(Vertices[tri[0] - 1], Vertices[tri[1] - 1], Vertices[tri[2] - 1], tex[0], tex[1], tex[2]);
+                                        Triangles.Add(t);
                                     }
 
                                     if (list.Count == 12)
@@ -121,19 +117,14 @@ namespace MyDrawing.D3
                                             quad[i] = int.Parse(list[j]);
                                             tex[i] = int.Parse(list[j + 1]);
                                         }
-                                        Quad q = new Quad(quad[0], quad[1], quad[2], quad[3], tex[0], tex[1], tex[2], tex[3]);
-                                        quadsTemp.Add(q);
+                                        Quad q = new Quad(Vertices[quad[0]], Vertices[quad[1]], Vertices[quad[2]], Vertices[quad[3]], tex[0], tex[1], tex[2], tex[3]);
+                                        Quads.Add(q);
                                     }
                                 }
                                 break;
                         }
                     }
                 }
-
-                Vertices = verticesTemp;
-                Triangles = trianglesTemp;
-                Quads = quadsTemp;
-                TextureCoordinates = textureCoordinatesTemp;
             }
         }
 
@@ -155,13 +146,13 @@ namespace MyDrawing.D3
         /// <param name="v1"></param>
         /// <param name="v2"></param>
         /// <returns></returns>
-        private Vector GetVector(int v1, int v2)
+        private Vector GetVector(Vertex v1, Vertex v2)
         {
             var tempVector = new Vector
             {
-                X = Vertices[v1 - 1 ].X - Vertices[v2 - 1].X,
-                Y = Vertices[v1 - 1 ].Y - Vertices[v2 - 1].Y,
-                Z = Vertices[v1 - 1 ].Z - Vertices[v2 - 1].Z
+                X = v1.X - v2.X,
+                Y = v1.Y - v2.Y,
+                Z = v1.Z - v2.Z
             };
             return tempVector;
         }
@@ -202,11 +193,11 @@ namespace MyDrawing.D3
             Vectors = vectorsTemp;
         } 
 
-        private void GiveNormalToEachVertex(int v1, int v2, int v3, Vector normal)
+        private void GiveNormalToEachVertex(Vertex v1, Vertex v2, Vertex v3, Vector normal)
         {
-            Vertices[v1 - 1 ].VNormal = Vertices[v1 - 1 ].VNormal + normal;
-            Vertices[v2 - 1 ].VNormal = Vertices[v2 - 1 ].VNormal + normal;
-            Vertices[v3 - 1 ].VNormal = Vertices[v3 - 1 ].VNormal + normal;
+            v1.VNormal += normal;
+            v2.VNormal += normal;
+            v3.VNormal += normal;
         } //Снабжаем каждую вершину информацией о нормали треугольника
 
         private void NormalizeAllVertexNormals()
@@ -260,12 +251,12 @@ namespace MyDrawing.D3
 
                 foreach (var t in Triangles)
                 {
-                    var p1 = new Point((int)Vertices[t.V1 - 1].X + horizontalShift,
-                        -(int)Vertices[t.V1 - 1].Y + verticalShift);
-                    var p2 = new Point((int)Vertices[t.V2 - 1].X + horizontalShift,
-                        -(int)Vertices[t.V2 - 1].Y + verticalShift);
-                    var p3 = new Point((int)Vertices[t.V3 - 1].X + horizontalShift,
-                        -(int)Vertices[t.V3 - 1].Y + verticalShift);
+                    var p1 = new Point((int)t.V1.X + horizontalShift,
+                        -(int) t.V1.Y + verticalShift);
+                    var p2 = new Point((int)t.V2.X + horizontalShift,
+                        -(int)t.V2.Y + verticalShift);
+                    var p3 = new Point((int)t.V3.X + horizontalShift,
+                        -(int)t.V3.Y + verticalShift);
                     gr.DrawLine(myRedPen, p1, p2);
                     gr.DrawLine(myRedPen, p2, p3);
                     gr.DrawLine(myRedPen, p1, p3);
@@ -286,14 +277,14 @@ namespace MyDrawing.D3
                 var myRedPen = new Pen(Color.Red);
                 foreach (var q in Quads)
                 {
-                    var p1 = new Point((int)Vertices[q.V1 - 1].X + horizontalShift,
-                        -(int)Vertices[q.V1 - 1].Y + verticalShift);
-                    var p2 = new Point((int)Vertices[q.V2 - 1].X + horizontalShift,
-                        -(int)Vertices[q.V2 - 1].Y + verticalShift);
-                    var p3 = new Point((int)Vertices[q.V3 - 1].X + horizontalShift,
-                        -(int)Vertices[q.V3 - 1 ].Y + verticalShift);
-                    var p4 = new Point((int)Vertices[q.V4 - 1].X + horizontalShift,
-                        -(int)Vertices[q.V4 - 1].Y + verticalShift);
+                    var p1 = new Point((int)q.V1.X + horizontalShift,
+                        -(int)q.V1.Y + verticalShift);
+                    var p2 = new Point((int)q.V2.X + horizontalShift,
+                        -(int)q.V2.Y + verticalShift);
+                    var p3 = new Point((int)q.V3.X + horizontalShift,
+                        -(int)q.V3.Y + verticalShift);
+                    var p4 = new Point((int)q.V4.X + horizontalShift,
+                        -(int)q.V4.Y + verticalShift);
                     gr.DrawLine(myRedPen, p1, p2);
                     gr.DrawLine(myRedPen, p2, p3);
                     gr.DrawLine(myRedPen, p3, p4);
@@ -480,21 +471,21 @@ namespace MyDrawing.D3
                     }
         } //Метод рисования модели(раcтеризация всех полигонов модели со сглаживанием)
 
-        private void CompleteTriangleDraw(int v1, int v2, int v3, int c1, int c2, int c3, Vector v,
+        private void CompleteTriangleDraw(Vertex v1, Vertex v2, Vertex v3, int c1, int c2, int c3, Vector v,
             ref float[,] zBuffer)
         {
             double a = 0, b = 0, g = 0, A = v.X, B = v.Y, C = v.Z;
             float z = 0;
-            var D = -(A * Vertices[v1 - 1].X + B * Vertices[v1 - 1].Y + C * Vertices[v1 - 1].Z);
-            var maxX = Math.Max((int)Vertices[v1 - 1].X,
-                (int)Math.Max(Vertices[v2 - 1].X, Vertices[v3 - 1].X)); //
-            var minX = Math.Min((int)Vertices[v1 - 1].X,
-                (int)Math.Min(Vertices[v2 - 1].X,
-                    Vertices[v3 - 1].X)); //прямоугольник, который ограничивает треугольник
-            var maxY = Math.Max((int)Vertices[v1 - 1].Y,
-                (int)Math.Max(Vertices[v2 - 1].Y, Vertices[v3 - 1].Y)); //
-            var minY = Math.Min((int)Vertices[v1 - 1].Y,
-                (int)Math.Min(Vertices[v2 - 1].Y, Vertices[v3 - 1].Y)); //
+            var D = -(A * v1.X + B * v1.Y + C * v1.Z);
+            var maxX = Math.Max((int)v1.X,
+                (int)Math.Max(v2.X, v3.X)); //
+            var minX = Math.Min((int)v1.X,
+                (int)Math.Min(v2.X,
+                    v3.X)); //прямоугольник, который ограничивает треугольник
+            var maxY = Math.Max((int)v1.Y,
+                (int)Math.Max(v2.Y, v3.Y)); //
+            var minY = Math.Min((int)v1.Y,
+                (int)Math.Min(v2.Y, v3.Y)); //
             int horizontalShift = Width / 2, verticalShift = (int)(Height * 0.6);
             //движемся по пикселям внутри треугольника и проверяем, принадлежит ли конкретный пиксель треугольнику
             for (var x = minX; x <= maxX; x++)
@@ -503,14 +494,14 @@ namespace MyDrawing.D3
                     z = (float)(-(A * x + B * y + D) / C);
                     var xResult = x + horizontalShift;
                     var yResult = -y + verticalShift;
-                    if (PointInsideTriangle(x, y, Vertices[v1 - 1], Vertices[v2 - 1], Vertices[v3 - 1], ref a,
+                    if (PointInsideTriangle(x, y, v1, v2, v3, ref a,
                             ref b, ref g) && yResult > 0 && xResult > 0)
                         if (z > zBuffer[xResult, yResult])
                         {
                             if (TextureCoordinates.Count > 0)
                             {
                                 var texel = FindTexel(c1, c2, c3, a, b, g);
-                                texel = DiffuseLight(Vertices[v1 - 1].VNormal, Vertices[v2 - 1].VNormal, Vertices[v3 - 1].VNormal, texel, a, b, g);
+                                texel = DiffuseLight(v1.VNormal, v2.VNormal, v3.VNormal, texel, a, b, g);
                                 //texel = SpecularLight(Vertices[v1 - 1 > 0 ? v1 - 1 : v1].VNormal,
                                 //    Vertices[v2 - 1 > 0 ? v2 - 1 : v2].VNormal,
                                 //    Vertices[v3 - 1 > 0 ? v3 - 1 : v3].VNormal, texel, a, b, g, x, y, z);

@@ -102,14 +102,14 @@ namespace MyDrawing.D3
 
     public struct Triangle
     {
-        public int V1;
-        public int V2;
-        public int V3;
+        public Vertex V1;
+        public Vertex V2;
+        public Vertex V3;
         public int C1;
         public int C2;
         public int C3;
 
-        public Triangle(int v1, int v2, int v3, int c1, int c2, int c3)
+        public Triangle(Vertex v1, Vertex v2, Vertex v3, int c1, int c2, int c3)
         {
             V1 = v1;
             V2 = v2;
@@ -122,16 +122,16 @@ namespace MyDrawing.D3
 
     public struct Quad
     {
-        public int V1;
-        public int V2;
-        public int V3;
-        public int V4;
+        public Vertex V1;
+        public Vertex V2;
+        public Vertex V3;
+        public Vertex V4;
         public int C1;
         public int C2;
         public int C3;
         public int C4;
 
-        public Quad(int v1, int v2, int v3, int v4, int c1, int c2, int c3, int c4)
+        public Quad(Vertex v1, Vertex v2, Vertex v3, Vertex v4, int c1, int c2, int c3, int c4)
         {
             V1 = v1;
             V2 = v2;

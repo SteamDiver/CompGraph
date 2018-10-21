@@ -57,8 +57,7 @@ namespace Task4WinForms
 
         private void Render()
         {
-            try
-            {
+            
                 List<double[]> vector = new List<double[]>();
                 //double[] values1 = { Convert.ToDouble(textBox1.Text), Convert.ToDouble(textBox6.Text), Convert.ToDouble(textBox9.Text) }; vector.Add(values1);
                 //double[] values2 = { Convert.ToDouble(textBox2.Text), Convert.ToDouble(textBox5.Text), Convert.ToDouble(textBox8.Text) }; vector.Add(values2);
@@ -74,11 +73,8 @@ namespace Task4WinForms
                 Model alex = new Model();
                 PictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                 PictureBox.Image = alex.Draw(path1, path2, vector);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            
+            
         }
     }
 }
