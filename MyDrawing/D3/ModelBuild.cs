@@ -179,7 +179,7 @@ namespace MyDrawing.D3
                 var vector1 = GetVector(t.V1, t.V2);
                 var vector2 = GetVector(t.V2, t.V3);
                 var normal = GetNormal(vector1, vector2);
-                Vector.Magnitude(normal);
+                //Vector.Magnitude(normal);
                 Vector.Normalize(ref normal);
                 GiveNormalToEachVertex(t.V1, t.V2, t.V3, normal);
                 vectorsTemp.Add(normal);
@@ -380,9 +380,9 @@ namespace MyDrawing.D3
             cosVal = Math.Abs(cosVal);
             var viewVector = eyeVector - pixelPosWorld;
             Vector.Normalize(ref viewVector);
-            var reflectVector = 2 * Vector.DotProduct(lightVector, -resNorm) * resNorm + lightVector;
+            var reflectVector = 2 * lightVector * (-resNorm) * resNorm + lightVector;
             Vector.Normalize(ref reflectVector);
-            var specLight = Vector.DotProduct(reflectVector, viewVector);
+            var specLight = reflectVector * viewVector;
             specLight = Math.Abs(specLight);
             var materialCoef = 0.1;
             var finalIntensity = cosVal + materialCoef * specLight;

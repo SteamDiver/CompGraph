@@ -37,6 +37,7 @@ namespace MyDrawing.D3
         public double X;
         public double Y;
         public double Z;
+        public double Magnitude => Math.Sqrt(X * X + Y * Y + Z * Z);
 
         public Vector(double x, double y, double z)
         {
@@ -60,6 +61,11 @@ namespace MyDrawing.D3
             return new Vector(v.X * value, v.Y * value, v.Z * value);
         }
 
+        public static double operator *(Vector v1, Vector v2)
+        {
+            return v1.Magnitude * v2.Magnitude * CosCalc(v1, v2);
+        }
+
         public static Vector operator -(Vector v)
         {
             return new Vector(-v.X, -v.Y, -v.Z);
@@ -80,20 +86,7 @@ namespace MyDrawing.D3
             }
         }
 
-        /// <summary>
-        ///  Нахождение величины вектора
-        /// </summary>
-        /// <param name="v"></param>
-        /// <returns></returns>
-        public static double Magnitude(Vector v)
-        {
-            return Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
-        }
-
-        public static double DotProduct(Vector v1, Vector v2)
-        {
-            return Magnitude(v1) * Magnitude(v2) * CosCalc(v1, v2);
-        }
+       
 
         /// <summary>
         /// Нахождение косинуса между двумя векторами
