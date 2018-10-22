@@ -160,7 +160,7 @@ namespace MyDrawing.D3
         }
 
         /// <summary>
-        /// Построение ненормализованной нормали треугольника по двум векторам
+        /// Построение нормализованной нормали треугольника по двум векторам
         /// </summary>
         /// <param name="v1"></param>
         /// <param name="v2"></param>
@@ -173,6 +173,7 @@ namespace MyDrawing.D3
                 Y = v1.Z * v2.X - v1.X * v2.Z,
                 Z = v1.X * v2.Y - v1.Y * v2.X
             };
+            normal.Normalize();
             return normal;
         }
 
@@ -187,7 +188,6 @@ namespace MyDrawing.D3
                 var vector1 = GetVector(t.V1, t.V2);
                 var vector2 = GetVector(t.V2, t.V3);
                 var normal = GetNormal(vector1, vector2);
-                normal.Normalize();
                 GiveNormalToEachVertex(t.V1, t.V2, t.V3, normal);
                 vectorsTemp.Add(normal);
             }
@@ -441,9 +441,17 @@ namespace MyDrawing.D3
 
         //========================ТРАНСФОРМАЦИЯ МОДЕЛИ===================================
 
+        /// <summary>
+        ///         Находим координаты для вершины после трансформации
+        /// </summary>
+        /// <param name="vertexCoord"></param>
+        /// <param name="translate"></param>
+        /// <param name="scale"></param>
+        /// <param name="rotation"></param>
+        /// <param name="projectValues"></param>
+        /// <returns></returns>
         private double[] TransformCoordinates(double[] vertexCoord, Vector translate, Vector scale,
                 Vector rotation, double projectValues)
-        //Находим координаты для вершины после трансформации
         {
             return ModelTransform.CoordAfterTransformation(vertexCoord, ModelTransform.GetScaleMatrix(scale),
                 ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation),
