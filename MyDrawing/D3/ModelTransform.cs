@@ -9,28 +9,28 @@ namespace MyDrawing.D3
     class ModelTransform
     {
        
-        public static double[,] GetScaleMatrix(double[] matrixValues)
+        public static double[,] GetScaleMatrix(Vector scaleVector)
         {
             double[,] result = new double[,] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
-            result[0, 0] = matrixValues[0];
-            result[1, 1] = matrixValues[1];
-            result[2, 2] = matrixValues[2];
+            result[0, 0] = scaleVector.X;
+            result[1, 1] = scaleVector.Y;
+            result[2, 2] = scaleVector.Z;
             return result;
         }
-        public static double[,] GetTranslateMatrix(double[] matrixValues)
+        public static double[,] GetTranslateMatrix(Vector translateVector)
         {
             double[,] result = new double[,] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
-            result[0, 3] = matrixValues[0];
-            result[1, 3] = matrixValues[1];
-            result[2, 3] = matrixValues[2];
+            result[0, 3] = translateVector.X;
+            result[1, 3] = translateVector.Y;
+            result[2, 3] = translateVector.Z;
             return result;
         }
-        public static double[,] GetRotationMatrix(double[] values)
+        public static double[,] GetRotationMatrix(Vector rotationVector)
         {
             double[,] resultX = new double[,] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
             double[,] resultY = new double[,] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
             double[,] resultZ = new double[,] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
-            double angle1 = values[0], angle2 = values[1], angle3 = values[2];
+            double angle1 = rotationVector.X, angle2 = rotationVector.Y, angle3 = rotationVector.Z;
 
             resultX[1, 1] = Math.Cos(angle1);
             resultX[1, 2] = Math.Sin(angle1);

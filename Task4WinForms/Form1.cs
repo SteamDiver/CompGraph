@@ -57,22 +57,13 @@ namespace Task4WinForms
 
         private void Render()
         {
-            
-                List<double[]> vector = new List<double[]>();
-                //double[] values1 = { Convert.ToDouble(textBox1.Text), Convert.ToDouble(textBox6.Text), Convert.ToDouble(textBox9.Text) }; vector.Add(values1);
-                //double[] values2 = { Convert.ToDouble(textBox2.Text), Convert.ToDouble(textBox5.Text), Convert.ToDouble(textBox8.Text) }; vector.Add(values2);
-                //double[] values3 = { Convert.ToDouble(textBox3.Text), Convert.ToDouble(textBox4.Text), Convert.ToDouble(textBox7.Text) }; vector.Add(values3);
+                Vector translate = new Vector(0, -100, 0);
+                Vector scale = new Vector(1, 1, 1);
+                Vector rotation = new Vector(XRotate.Value / 10d, 0, 0);
 
-                double[] values1 = {0, 0, 0};
-                vector.Add(values1);
-                double[] values2 = {1, 1, 1};
-                vector.Add(values2);
-                double[] values3 = { XRotate.Value / 10d, 0, 0};
-                vector.Add(values3);
-
-                Model alex = new Model();
-                PictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
-                PictureBox.Image = alex.Draw(path1, path2, vector);
+                Model alex = new Model(path1, path2);
+                PictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+                PictureBox.Image = alex.Draw(translate, scale, rotation);
             
             
         }
