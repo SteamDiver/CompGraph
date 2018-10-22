@@ -19,7 +19,7 @@ namespace MyDrawing.D3
         public double X;
         public double Y;
         public double Z;
-        public double[] CoordVector;
+        public MatrixVector CoordVector;
         public Vector VNormal;
 
         public Vertex(double x, double y, double z)
@@ -27,8 +27,18 @@ namespace MyDrawing.D3
             X = x;
             Y = y;
             Z = z;
-            CoordVector = new[] {x, y, z, 1};
+            CoordVector = new MatrixVector(new[]{x, y, z, 1});
             VNormal = new Vector(0, 0, 0);
+        }
+    }
+
+    public struct MatrixVector
+    {
+        public double[] Vector;
+
+        public MatrixVector(double[] vector)
+        {
+            Vector = vector;
         }
     }
 

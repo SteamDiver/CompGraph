@@ -450,12 +450,12 @@ namespace MyDrawing.D3
         /// <param name="rotation"></param>
         /// <param name="projectValues"></param>
         /// <returns></returns>
-        private double[] TransformCoordinates(double[] vertexCoord, Vector translate, Vector scale,
+        private MatrixVector TransformCoordinates(MatrixVector vertexCoord, Vector translate, Vector scale,
                 Vector rotation, double projectValues)
         {
             return ModelTransform.CoordAfterTransformation(vertexCoord, ModelTransform.GetScaleMatrix(scale),
                 ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation),
-                ModelTransform.GetProjectionatrix(projectValues));
+                ModelTransform.GetProjectionMatrix(projectValues));
         }
 
         private void TransformModel(Vector translation,Vector scale, Vector rotation)
@@ -464,9 +464,9 @@ namespace MyDrawing.D3
             foreach (var v in Vertices)
             {
                 var coordVector = TransformCoordinates(v.CoordVector, translation, scale, rotation, pv);
-                v.X = coordVector[0];
-                v.Y = coordVector[1];
-                v.Z = coordVector[2];
+                v.X = coordVector.Vector[0];
+                v.Y = coordVector.Vector[1];
+                v.Z = coordVector.Vector[2];
             }
         } //Обращаем все координаты
 
