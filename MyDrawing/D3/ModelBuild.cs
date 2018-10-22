@@ -38,7 +38,7 @@ namespace MyDrawing.D3
             {
                 var bmp = new Bitmap(1, 1);
                 var g = Graphics.FromImage(bmp);
-                g.Clear(Color.Gray);
+                g.Clear(Color.Pink);
                 TextureMap = bmp;
             }
         }
