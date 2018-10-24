@@ -14,7 +14,6 @@ namespace MyDrawing.D3
         public List<Vertex> Vertices { get; set; } = new List<Vertex>();
         public List<Triangle> Triangles { get; set; } = new List<Triangle>();
         public List<Quad> Quads { get; set; } = new List<Quad>();
-        public List<Vector> Vectors { get; set; } = new List<Vector>();
         public List<Vertex2D> TextureCoordinates { get; set; } = new List<Vertex2D>();
         public Bitmap ModelBitmap { get; set; }
         public Bitmap TextureMap { get; set; }
@@ -22,7 +21,7 @@ namespace MyDrawing.D3
         public Vector Translation { get; set; } = new Vector(0, 0, 0);
         public Vector Scale { get; set; } = new Vector(1, 1, 1);
         public Vector Rotation { get; set; } = new Vector(0, 0, 0);
-
+        public double[,] ZBuffer;
 
 
         public Model(string objPath, string texturePath = "")
@@ -44,7 +43,7 @@ namespace MyDrawing.D3
             {
                 var bmp = new Bitmap(1, 1);
                 var g = Graphics.FromImage(bmp);
-                g.Clear(Color.DarkGray);
+                g.Clear(Color.Gray);
                 TextureMap = bmp;
             }
         }
@@ -149,69 +148,13 @@ namespace MyDrawing.D3
         //=============================РАБОТА С ВЕКТОРАМИ===================================
 
         /// <summary>
-        /// Построение вектора по двум вершинам
+        /// Нормализуем векторы(нормали) для каждой вершины модели
         /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <returns></returns>
-        private Vector GetVector(Vertex v1, Vertex v2)
-        {
-            var tempVector = new Vector
-            {
-                X = v1.X - v2.X,
-                Y = v1.Y - v2.Y,
-                Z = v1.Z - v2.Z
-            };
-            return tempVector;
-        }
-
-        /// <summary>
-        /// Построение нормализованной нормали треугольника по двум векторам
-        /// </summary>
-        /// <param name="v1"></param>
-        /// <param name="v2"></param>
-        /// <returns></returns>
-        private Vector GetNormal(Vector v1, Vector v2)
-        {
-            var normal = new Vector
-            {
-                X = v1.Y * v2.Z - v1.Z * v2.Y,
-                Y = v1.Z * v2.X - v1.X * v2.Z,
-                Z = v1.X * v2.Y - v1.Y * v2.X
-            };
-            normal.Normalize();
-            return normal;
-        }
-
-        /// <summary>
-        /// Нахождение нормалей для всех треугольников модели
-        /// </summary>
-        private void FindNormals()
-        {
-            var vectorsTemp = new List<Vector>();
-            foreach (var t in Triangles)
-            {
-                var vector1 = GetVector(t.V1, t.V2);
-                var vector2 = GetVector(t.V2, t.V3);
-                var normal = GetNormal(vector1, vector2);
-                GiveNormalToEachVertex(t.V1, t.V2, t.V3, normal);
-                vectorsTemp.Add(normal);
-            }
-            Vectors = vectorsTemp;
-        }
-
-        private void GiveNormalToEachVertex(Vertex v1, Vertex v2, Vertex v3, Vector normal)
-        {
-            v1.VNormal += normal;
-            v2.VNormal += normal;
-            v3.VNormal += normal;
-        } //Снабжаем каждую вершину информацией о нормали треугольника
-
         private void NormalizeAllVertexNormals()
         {
             foreach (var v in Vertices)
                 v.VNormal.Normalize();
-        } //Нормализуем векторы(нормали) для каждой вершины модели
+        } 
 
         #endregion
 
@@ -221,23 +164,10 @@ namespace MyDrawing.D3
 
         private void SplitQuads() //Разделение четырехугольного полигона на треугольники
         {
-            var t = new Triangle();
             foreach (var q in Quads)
             {
-                t.V1 = q.V1;
-                t.C1 = q.C1;
-                t.V2 = q.V2;
-                t.C2 = q.C2;
-                t.V3 = q.V3;
-                t.C3 = q.C3;
-                Triangles.Add(t);
-                t.V1 = q.V3;
-                t.C1 = q.C3;
-                t.V2 = q.V4;
-                t.C2 = q.C4;
-                t.V3 = q.V1;
-                t.C3 = q.C1;
-                Triangles.Add(t);
+                Triangles.Add(new Triangle(q.V1, q.V2, q.V3, q.C1, q.C2, q.C3));
+                Triangles.Add(new Triangle(q.V3, q.V4, q.V1, q.C3, q.C4, q.C1));
             }
         } //Разобьем квадраты на треугольники
 
@@ -285,7 +215,7 @@ namespace MyDrawing.D3
             var w = TextureMap.Width;
             var h = TextureMap.Height;
             var u = a * c1.U + b * c2.U + g * c3.U;
-            var v = a * (1 - c1.V) + b * (1 - c2.V) + g * (1 - c3.V);
+            var v = a * (1 - c1.V) + b * (1 - c2.V) + g * (1 - c3.V) -1e-10;
             var texel = TextureMap.GetPixel((int)(u * w), (int)(v * h));
             return texel;
         }
@@ -293,8 +223,7 @@ namespace MyDrawing.D3
         #region TriangleDraw
 
         private void CompleteTriangleDraw(Triangle t,
-            Vector v, int modelWidth, int modelHeight, List<Light> lights,
-            ref double[,] zBuffer)
+            Vector v, int modelWidth, int modelHeight, List<Light> lights)
         {
             double A = v.X, B = v.Y, C = v.Z;
             var D = -(A * t.V1.X + B * t.V1.Y + C * t.V1.Z);
@@ -317,7 +246,7 @@ namespace MyDrawing.D3
                     var yResult = -y + verticalShift;
                     if (IsPointInsideTriangle(x, y, t, out double a,
                             out double b, out double g) && yResult > 0 && xResult > 0)
-                        if (z > zBuffer[xResult, yResult])
+                        if (z > ZBuffer[xResult, yResult])
                         {
                             if (TextureCoordinates.Count > 0)
                             {
@@ -330,20 +259,19 @@ namespace MyDrawing.D3
                                 if (ModelBitmap.Width > xResult && yResult < ModelBitmap.Height)
                                 {
                                     ModelBitmap.SetPixel(xResult, yResult, texel);
-                                    zBuffer[xResult, yResult] = z;
+                                    ZBuffer[xResult, yResult] = z;
                                 }
                             }
                         }
                 }
         }
 
-        private double[,] InitializeZBuffer(int width, int height)
+        private void InitializeZBuffer(int width, int height)
         {
-            var zBuffer = new double[2 * width, 2 * height];
-            for (var i = 0; i < zBuffer.GetLength(0); i++)
-                for (var j = 0; j < zBuffer.GetLength(1); j++)
-                    zBuffer[i, j] = float.MinValue;
-            return zBuffer;
+            ZBuffer = new double[2 * width, 2 * height];
+            for (var i = 0; i < ZBuffer.GetLength(0); i++)
+                for (var j = 0; j < ZBuffer.GetLength(1); j++)
+                    ZBuffer[i, j] = float.MinValue;
         }
 
         #endregion
@@ -355,15 +283,12 @@ namespace MyDrawing.D3
         private void CompleteModelDraw(List<Light> lights)
         {
             FindAreaSize(out int width, out int height);
-            var myMap = new Bitmap(width, height);
-            ModelBitmap = myMap;
+            ModelBitmap = new Bitmap(width, height);
             Graphics.FromImage(ModelBitmap).SmoothingMode = SmoothingMode.AntiAlias;
-            var zBuffer = InitializeZBuffer(width, height);
-            FindNormals();
+            InitializeZBuffer(width, height);
             NormalizeAllVertexNormals();
-            var i = 0;
             foreach (var t in Triangles)
-                CompleteTriangleDraw(t, Vectors[i++], width, height, lights, ref zBuffer);
+                CompleteTriangleDraw(t, t.Norm, width, height, lights);
         }
 
         #endregion

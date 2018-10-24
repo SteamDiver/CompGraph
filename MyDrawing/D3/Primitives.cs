@@ -96,7 +96,26 @@ namespace MyDrawing.D3
             }
         }
 
-       
+        public Vector(Vertex v1, Vertex v2)
+        {
+
+            X = v1.X - v2.X;
+            Y = v1.Y - v2.Y;
+            Z = v1.Z - v2.Z;
+
+        }
+
+        public static Vector GetNormal(Vector v1, Vector v2)
+        {
+            var normal = new Vector
+            {
+                X = v1.Y * v2.Z - v1.Z * v2.Y,
+                Y = v1.Z * v2.X - v1.X * v2.Z,
+                Z = v1.X * v2.Y - v1.Y * v2.X
+            };
+            normal.Normalize();
+            return normal;
+        }
 
         /// <summary>
         /// Нахождение косинуса между двумя векторами
@@ -110,7 +129,7 @@ namespace MyDrawing.D3
         } 
     }
 
-    public struct Triangle
+    public class Triangle
     {
         public Vertex V1;
         public Vertex V2;
@@ -118,6 +137,10 @@ namespace MyDrawing.D3
         public Vertex2D C1;
         public Vertex2D C2;
         public Vertex2D C3;
+        public Vector Norm
+        {
+            get { return GetNorm(); }
+        }
 
         public Triangle(Vertex v1, Vertex v2, Vertex v3, Vertex2D c1, Vertex2D c2, Vertex2D c3)
         {
@@ -127,7 +150,19 @@ namespace MyDrawing.D3
             C1 = c1;
             C2 = c2;
             C3 = c3;
+
+            V1.VNormal += GetNorm();
+            V2.VNormal += GetNorm();
+            V3.VNormal += GetNorm();
         }
+
+        private Vector GetNorm()
+        {
+            var vector1 = new Vector(V1, V2);
+            var vector2 = new Vector(V2, V3);
+            return Vector.GetNormal(vector1, vector2);
+        }
+
     }
 
     public struct Quad
