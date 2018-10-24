@@ -249,7 +249,17 @@ namespace MyDrawing.D3
 
         //=======================РАБОТА С ТРЕУГОЛЬНИКАМИ=============================
 
-        private static bool IsPointInsideTriangle(double x, double y, Triangle t, out double alpha , out double beta, out double gamma) //Проверка точки на принадлежность треугольнику
+        /// <summary>
+        /// Проверка точки на принадлежность треугольнику
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="t">Треугольник</param>
+        /// <param name="alpha"></param>
+        /// <param name="beta"></param>
+        /// <param name="gamma"></param>
+        /// <returns></returns>
+        private static bool IsPointInsideTriangle(double x, double y, Triangle t, out double alpha , out double beta, out double gamma)
         {
             var denominator = (t.V2.Y - t.V3.Y) * (t.V1.X - t.V3.X) + (t.V3.X - t.V2.X) * (t.V1.Y - t.V3.Y);
             alpha = ((t.V2.Y - t.V3.Y) * (x - t.V3.X) + (t.V3.X - t.V2.X) * (y - t.V3.Y)) / denominator;
@@ -372,19 +382,17 @@ namespace MyDrawing.D3
         /// <param name="projectValues"></param>
         /// <returns></returns>
         private MatrixVector TransformCoordinates(MatrixVector vertexCoord, Vector translate, Vector scale,
-                Vector rotation, double projectValues)
+                Vector rotation)
         {
             return ModelTransform.CoordAfterTransformation(vertexCoord, ModelTransform.GetScaleMatrix(scale),
-                ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation),
-                ModelTransform.GetProjectionMatrix(projectValues));
+                ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation));
         }
 
         private void TransformModel(Vector translation,Vector scale, Vector rotation)
         {
-            double pv = 1000;
             foreach (var v in Vertices)
             {
-                var coordVector = TransformCoordinates(v.CoordVector, translation, scale, rotation, pv);
+                var coordVector = TransformCoordinates(v.CoordVector, translation, scale, rotation);
                 v.X = coordVector.Vector[0];
                 v.Y = coordVector.Vector[1];
                 v.Z = coordVector.Vector[2];

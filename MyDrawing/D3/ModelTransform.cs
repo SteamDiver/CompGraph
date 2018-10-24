@@ -56,9 +56,9 @@ namespace MyDrawing.D3
             return result;
         }
 
-        public static MatrixVector CoordAfterTransformation(MatrixVector xyz, Matrix3D mScale, Matrix3D mTranslate, Matrix3D mRotate, Matrix3D mProject)
+        public static MatrixVector CoordAfterTransformation(MatrixVector xyz, Matrix3D mScale, Matrix3D mTranslate, Matrix3D mRotate)
         {
-            MatrixVector result = mProject * (mTranslate * (mRotate * (mScale * xyz)));
+            MatrixVector result = mTranslate * (mRotate * (mScale * xyz));
             for (int i = 0; i < 3; i++)
             {
                 result.Vector[i] /= result.Vector[3];

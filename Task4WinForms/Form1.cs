@@ -27,7 +27,9 @@ namespace Task4WinForms
 
         private List<Light> lights = new List<Light>()
         {
-            new DiffuseLight(new Vector(0, 0, 1))
+            new DiffuseLight(new Vector(0, 0, 1)),
+            new DiffuseLight(new Vector(1, 1, 1))
+
         };
 
         public Form1()
