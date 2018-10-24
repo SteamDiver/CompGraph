@@ -73,6 +73,8 @@ namespace MyDrawing.D3
 class Matrix3D
 {
     public double[,] Matrix;
+    public int Width => Matrix.GetLength(0);
+    public int Height => Matrix.GetLength(1);
 
     public Matrix3D(double[,] matrix)
     {

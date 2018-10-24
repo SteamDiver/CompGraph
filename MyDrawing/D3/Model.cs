@@ -4,20 +4,26 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
-
-//using ImageMagick;
+using System.Linq;
+using MyDrawing.VisualObjects;
 
 namespace MyDrawing.D3
 {
     public class Model
     {
-        public List<Vertex> Vertices = new List<Vertex>(); //Точки модели
-        public List<Triangle> Triangles = new List<Triangle>(); //Треугольники модели.
-        public List<Quad> Quads = new List<Quad>();
-        public List<Vector> Vectors = new List<Vector>(); //Векторы треугольников(нормализованные).
-        public List<Vertex2D> TextureCoordinates = new List<Vertex2D>();
-        public Bitmap ModelBitmap;
-        public Bitmap TextureMap;
+        public List<Vertex> Vertices { get; set; } = new List<Vertex>();
+        public List<Triangle> Triangles { get; set; } = new List<Triangle>();
+        public List<Quad> Quads { get; set; } = new List<Quad>();
+        public List<Vector> Vectors { get; set; } = new List<Vector>();
+        public List<Vertex2D> TextureCoordinates { get; set; } = new List<Vertex2D>();
+        public Bitmap ModelBitmap { get; set; }
+        public Bitmap TextureMap { get; set; }
+
+        public Vector Translation { get; set; } = new Vector(0, 0, 0);
+        public Vector Scale { get; set; } = new Vector(1, 1, 1);
+        public Vector Rotation { get; set; } = new Vector(0, 0, 0);
+
+
 
         public Model(string objPath, string texturePath = "")
         {
@@ -38,7 +44,7 @@ namespace MyDrawing.D3
             {
                 var bmp = new Bitmap(1, 1);
                 var g = Graphics.FromImage(bmp);
-                g.Clear(Color.Pink);
+                g.Clear(Color.DarkGray);
                 TextureMap = bmp;
             }
         }
@@ -129,7 +135,7 @@ namespace MyDrawing.D3
                                         Quads.Add(q);
                                     }
                                 }
-                                break;
+                                    break;
                         }
                     }
                 }
@@ -243,97 +249,16 @@ namespace MyDrawing.D3
 
         //=======================РАБОТА С ТРЕУГОЛЬНИКАМИ=============================
 
-        private void TriangleRasterization(int v1, int v2, int v3, Color setColor)
+        private static bool IsPointInsideTriangle(double x, double y, Triangle t, out double alpha , out double beta, out double gamma) //Проверка точки на принадлежность треугольнику
         {
-            var horizontalShift = ModelBitmap.Width / 2;
-            var verticalShift = (int)(ModelBitmap.Height * 0.6);
-            var maxX = Math.Max((int)Vertices[v1 - 1].X,
-                (int)Math.Max(Vertices[v2 - 1].X, Vertices[v3 - 1].X)); //
-            var minX = Math.Min((int)Vertices[v1 - 1].X,
-                (int)Math.Min(Vertices[v2 - 1].X,
-                    Vertices[v3 - 1].X)); //прямоугольник, который ограничивает треугольник
-            var maxY = Math.Max((int)Vertices[v1 - 1].Y,
-                (int)Math.Max(Vertices[v2 - 1].Y, Vertices[v3 - 1].Y)); //
-            var minY = Math.Min((int)Vertices[v1 - 1].Y,
-                (int)Math.Min(Vertices[v2 - 1].Y, Vertices[v3 - 1].Y)); //
-
-            //движемся по пикселям внутри треугольника и проверяем, принадлежит ли конкретный пиксель треугольнику
-            for (var x = minX; x <= maxX; x++)
-                for (var y = minY; y <= maxY; y++)
-                {
-                    var Xresult = x + horizontalShift;
-                    var Yresult = -y + verticalShift;
-                    if (IsPointInsideTriangle(x, y, Vertices[v1 - 1], Vertices[v2 - 1], Vertices[v3 - 1]) &&
-                        Yresult > 0)
-                        ModelBitmap.SetPixel(Xresult, Yresult, setColor);
-                }
-        } //Растеризация треугольника
-
-        private static bool IsPointInsideTriangle(double x, double y, Vertex a, Vertex b,
-            Vertex c) //Проверка точки на принадлежность треугольнику
-        {
-            var denominator = (b.Y - c.Y) * (a.X - c.X) + (c.X - b.X) * (a.Y - c.Y);
-            var alpha = ((b.Y - c.Y) * (x - c.X) + (c.X - b.X) * (y - c.Y)) / denominator;
-            var beta = ((c.Y - a.Y) * (x - c.X) + (a.X - c.X) * (y - c.Y)) / denominator;
-            var gamma = 1 - alpha - beta;
-            return alpha >= 0 && alpha <= 1 && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1;
-        }
-
-        private static bool IsPointInsideTriangle(double x, double y, Vertex v1, Vertex v2, Vertex v3,
-            ref double alpha, ref double beta, ref double gamma) //Проверка точки на принадлежность треугольнику
-        {
-            var denominator = (v2.Y - v3.Y) * (v1.X - v3.X) + (v3.X - v2.X) * (v1.Y - v3.Y);
-            alpha = ((v2.Y - v3.Y) * (x - v3.X) + (v3.X - v2.X) * (y - v3.Y)) / denominator;
-            beta = ((v3.Y - v1.Y) * (x - v3.X) + (v1.X - v3.X) * (y - v3.Y)) / denominator;
+            var denominator = (t.V2.Y - t.V3.Y) * (t.V1.X - t.V3.X) + (t.V3.X - t.V2.X) * (t.V1.Y - t.V3.Y);
+            alpha = ((t.V2.Y - t.V3.Y) * (x - t.V3.X) + (t.V3.X - t.V2.X) * (y - t.V3.Y)) / denominator;
+            beta = ((t.V3.Y - t.V1.Y) * (x - t.V3.X) + (t.V1.X - t.V3.X) * (y - t.V3.Y)) / denominator;
             gamma = 1 - alpha - beta;
             return alpha >= 0 && alpha <= 1 && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1;
         }
 
         #endregion
-
-        #region Lightning
-
-        //=======================РАБОТА С ПИКСЕЛЯМИ===================================
-        private Color DiffuseLight(Vector v1, Vector v2, Vector v3, Color modelColor, double a, double b, double g)
-        {
-            var newColor = Color.Empty;
-            var lightVector = new Vector(0, 0, 1);
-            lightVector.Normalize();
-            Vector pNorm; //нормаль для данного пикселя
-            pNorm.X = v1.X * a + v2.X * b + v3.X * g;
-            pNorm.Y = v1.Y * a + v2.Y * b + v3.Y * g;
-            pNorm.Z = v1.Z * a + v2.Z * b + v3.Z * g;
-            var cosVal = Vector.CosCalc(pNorm, lightVector);
-            cosVal = Math.Abs(cosVal);
-            newColor = Color.FromArgb((int)(modelColor.R * cosVal), (int)(modelColor.G * cosVal),
-                (int)(modelColor.B * cosVal));
-            return newColor;
-        } //Нахождение цвета пискеля(или текселя)
-
-        private Color SpecularLight(Vector v1, Vector v2, Vector v3, Color modelColor, double a, double b, double g,
-            Vector pixelPosWorld)
-        {
-            var lightVector = new Vector(0, 1, 1); //Vector.NormalizeVector(ref lightVector);
-            var eyeVector = new Vector(0, 0, 1);
-            Vector pNorm; //нормаль для данного пикселя
-            pNorm.X = v1.X * a + v2.X * b + v3.X * g;
-            pNorm.Y = v1.Y * a + v2.Y * b + v3.Y * g;
-            pNorm.Z = v1.Z * a + v2.Z * b + v3.Z * g;
-            var cosVal = Vector.CosCalc(pNorm, lightVector);
-            cosVal = Math.Abs(cosVal);
-            var viewVector = eyeVector - pixelPosWorld;
-            viewVector.Normalize();
-            var reflectVector = 2 * lightVector * (-pNorm) * pNorm + lightVector;
-            reflectVector.Normalize();
-            var specLight = reflectVector * viewVector;
-            specLight = Math.Abs(specLight);
-            var materialCoef = 0.1;
-            var finalIntensity = cosVal + materialCoef * specLight;
-            finalIntensity = finalIntensity > 1 ? 1 : finalIntensity;
-            var newColor = Color.FromArgb((int)(modelColor.R * finalIntensity), (int)(modelColor.G * finalIntensity),
-                (int)(modelColor.B * finalIntensity));
-            return newColor;
-        }
 
         /// <summary>
         /// Нахождение соответствующего пикселя на текстуре
@@ -355,46 +280,43 @@ namespace MyDrawing.D3
             return texel;
         }
 
-        #endregion
-
         #region TriangleDraw
 
-        //========================РАЗЛИЧНЫЕ ТИПЫ ОТРИСОВКИ ТРЕУГОЛЬНИКА=====================================
-
-        private void CompleteTriangleDraw(Vertex v1, Vertex v2, Vertex v3, Vertex2D c1, Vertex2D c2, Vertex2D c3,
-            Vector v, int modelWidth, int modelHeight,
-            ref float[,] zBuffer)
+        private void CompleteTriangleDraw(Triangle t,
+            Vector v, int modelWidth, int modelHeight, List<Light> lights,
+            ref double[,] zBuffer)
         {
-            double a = 0, b = 0, g = 0, A = v.X, B = v.Y, C = v.Z;
-            var D = -(A * v1.X + B * v1.Y + C * v1.Z);
-            var maxX = Math.Max((int)v1.X,
-                (int)Math.Max(v2.X, v3.X)); //
-            var minX = Math.Min((int)v1.X,
-                (int)Math.Min(v2.X,
-                    v3.X)); //прямоугольник, который ограничивает треугольник
-            var maxY = Math.Max((int)v1.Y,
-                (int)Math.Max(v2.Y, v3.Y)); //
-            var minY = Math.Min((int)v1.Y,
-                (int)Math.Min(v2.Y, v3.Y)); //
+            double A = v.X, B = v.Y, C = v.Z;
+            var D = -(A * t.V1.X + B * t.V1.Y + C * t.V1.Z);
+            var maxX = Math.Max((int)t.V1.X,
+                (int)Math.Max(t.V2.X, t.V3.X)); //
+            var minX = Math.Min((int)t.V1.X,
+                (int)Math.Min(t.V2.X,
+                    t.V3.X)); //прямоугольник, который ограничивает треугольник
+            var maxY = Math.Max((int)t.V1.Y,
+                (int)Math.Max(t.V2.Y, t.V3.Y)); //
+            var minY = Math.Min((int)t.V1.Y,
+                (int)Math.Min(t.V2.Y, t.V3.Y)); //
             int horizontalShift = modelWidth / 2, verticalShift = modelHeight / 2;
             //движемся по пикселям внутри треугольника и проверяем, принадлежит ли конкретный пиксель треугольнику
             for (var x = minX; x <= maxX; x++)
                 for (var y = minY; y <= maxY; y++)
                 {
-                    var z = (float)(-(A * x + B * y + D) / C);
+                    var z = -(A * x + B * y + D) / C;
                     var xResult = x + horizontalShift;
                     var yResult = -y + verticalShift;
-                    if (IsPointInsideTriangle(x, y, v1, v2, v3, ref a,
-                            ref b, ref g) && yResult > 0 && xResult > 0)
+                    if (IsPointInsideTriangle(x, y, t, out double a,
+                            out double b, out double g) && yResult > 0 && xResult > 0)
                         if (z > zBuffer[xResult, yResult])
                         {
                             if (TextureCoordinates.Count > 0)
                             {
-                                var texel = FindTexel(c1, c2, c3, a, b, g);
-                                texel = DiffuseLight(v1.VNormal, v2.VNormal, v3.VNormal, texel, a, b, g);
-                                //texel = SpecularLight(Vertices[v1 - 1 > 0 ? v1 - 1 : v1].VNormal,
-                                //    Vertices[v2 - 1 > 0 ? v2 - 1 : v2].VNormal,
-                                //    Vertices[v3 - 1 > 0 ? v3 - 1 : v3].VNormal, texel, a, b, g, x, y, z);
+                                var texel = FindTexel(t.C1, t.C2, t.C3, a, b, g);
+                                foreach (var light in lights)
+                                {
+                                    texel = light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a, b, g);
+                                }
+
                                 if (ModelBitmap.Width > xResult && yResult < ModelBitmap.Height)
                                 {
                                     ModelBitmap.SetPixel(xResult, yResult, texel);
@@ -405,13 +327,12 @@ namespace MyDrawing.D3
                 }
         }
 
-        private float[,] InitializeZBuffer()
+        private double[,] InitializeZBuffer(int width, int height)
         {
-            var zBuffer = new float[3000, 3000];
-            var l = zBuffer.GetLength(0) - 1;
-            for (var i = 0; i < l; i++)
-                for (var j = 0; j < l; j++)
-                    zBuffer[i, j] = -10000;
+            var zBuffer = new double[2 * width, 2 * height];
+            for (var i = 0; i < zBuffer.GetLength(0); i++)
+                for (var j = 0; j < zBuffer.GetLength(1); j++)
+                    zBuffer[i, j] = float.MinValue;
             return zBuffer;
         }
 
@@ -421,18 +342,18 @@ namespace MyDrawing.D3
 
         //========================ОТРИСОВКА МОДЕЛИ======================================
 
-        private void CompleteModelDraw()
+        private void CompleteModelDraw(List<Light> lights)
         {
             FindAreaSize(out int width, out int height);
             var myMap = new Bitmap(width, height);
             ModelBitmap = myMap;
             Graphics.FromImage(ModelBitmap).SmoothingMode = SmoothingMode.AntiAlias;
-            var zBuffer = InitializeZBuffer();
+            var zBuffer = InitializeZBuffer(width, height);
             FindNormals();
             NormalizeAllVertexNormals();
             var i = 0;
             foreach (var t in Triangles)
-                CompleteTriangleDraw(t.V1, t.V2, t.V3, t.C1, t.C2, t.C3, Vectors[i++], width, height, ref zBuffer);
+                CompleteTriangleDraw(t, Vectors[i++], width, height, lights, ref zBuffer);
         }
 
         #endregion
@@ -460,7 +381,7 @@ namespace MyDrawing.D3
 
         private void TransformModel(Vector translation,Vector scale, Vector rotation)
         {
-            double pv = 4000;
+            double pv = 1000;
             foreach (var v in Vertices)
             {
                 var coordVector = TransformCoordinates(v.CoordVector, translation, scale, rotation, pv);
@@ -470,25 +391,20 @@ namespace MyDrawing.D3
             }
         } //Обращаем все координаты
 
-        public Bitmap Draw(Vector translation, Vector scale, Vector rotation)
+        internal Bitmap Draw(List<Light> lights)
         {
-            TransformModel(translation, scale, rotation);
-            CompleteModelDraw();
-            var outBitmap = ModelBitmap;
-            return outBitmap;
+            TransformModel(Translation, Scale, Rotation);
+            CompleteModelDraw(lights);
+            return ModelBitmap;
         }
 
         private void FindAreaSize(out int width, out int height)
         {
-            double maxX = -10000, minX = 10000, maxY = -10000, minY = 10000;
-            foreach (var v in Vertices)
-            {
-                if (v.X < minX) minX = v.X;
-                if (v.X > maxX) maxX = v.X;
-                if (v.Y < minY) minY = v.Y;
-                if (v.Y > maxY) maxY = v.Y;
-            }
-
+            var maxX = Vertices.Max(x => x.X);
+            var minX = Vertices.Min(x => x.X);
+            var maxY = Vertices.Max(x => x.Y);
+            var minY = Vertices.Min(x => x.Y);
+            
             int ampX = (int)Math.Ceiling(maxX - minX), ampY = (int)Math.Ceiling(maxY - minY);
             width = ampX;
             height = ampY;

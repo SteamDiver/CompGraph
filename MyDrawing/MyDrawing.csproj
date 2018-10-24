@@ -42,7 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="D3\ModelBuild.cs" />
+    <Compile Include="D3\Camera.cs" />
+    <Compile Include="VisualObjects\DiffuseLight.cs" />
+    <Compile Include="D3\Light.cs" />
+    <Compile Include="D3\Model.cs" />
     <Compile Include="D3\ModelTransform.cs" />
     <Compile Include="D3\Primitives.cs" />
     <Compile Include="Drawer.cs" />
@@ -50,6 +53,7 @@
     <Compile Include="VisualObjects\Line.cs" />
     <Compile Include="UiElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VisualObjects\Scene.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
