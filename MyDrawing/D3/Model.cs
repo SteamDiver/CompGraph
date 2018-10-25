@@ -22,7 +22,7 @@ namespace MyDrawing.D3
         public Vector Translation { get; set; } = new Vector(0, 0, 0);
         public Vector Scale { get; set; } = new Vector(1, 1, 1);
         public Vector Rotation { get; set; } = new Vector(0, 0, 0);
-        public double[,] ZBuffer;
+        public float[,] ZBuffer;
 
 
         public Model(string objPath, string texturePath = "")
@@ -257,7 +257,7 @@ namespace MyDrawing.D3
                             {
                                 //ModelBitmap.SetPixel(xResult, yResult, texel);
                                 RenderedColors[xResult, yResult]= texel;
-                                ZBuffer[xResult, yResult] = z;
+                                ZBuffer[xResult, yResult] = (float)z;
                             }
                         }
             }
@@ -265,7 +265,7 @@ namespace MyDrawing.D3
 
         private void InitializeZBuffer(int width, int height)
         {
-            ZBuffer = new double[2 * width, 2 * height];
+            ZBuffer = new float[width + 1, height + 1];
             for (var i = 0; i < ZBuffer.GetLength(0); i++)
             for (var j = 0; j < ZBuffer.GetLength(1); j++)
                 ZBuffer[i, j] = float.MinValue;
@@ -346,7 +346,7 @@ namespace MyDrawing.D3
             var maxY = Vertices.Max(x => x.Y);
             var minY = Vertices.Min(x => x.Y);
 
-            int ampX = (int) Math.Ceiling(maxX - minX), ampY = (int) Math.Ceiling(maxY - minY);
+            int ampX = (int) Math.Floor(maxX - minX), ampY = (int) Math.Floor(maxY - minY);
             width = ampX;
             height = ampY;
         }

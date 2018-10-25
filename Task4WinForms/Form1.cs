@@ -103,5 +103,26 @@ namespace Task4WinForms
             PictureBox.Image = bmp;
             bmp.Save("save.jpg");
         }
+
+        private Vertex prevPoint;
+        private void PictureBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            var curPoint = new Vertex(e.X, e.Y, 0);
+
+            if ((e.Button & MouseButtons.Left) != 0 && prevPoint != null && scene != null) 
+            {
+                    Vertex v1 = new Vertex(prevPoint.Y / 100, prevPoint.X / 100, 0);
+                    Vertex v2 = new Vertex(curPoint.Y / 100, curPoint.X / 100, 0);
+                    var rotateVector = new Vector(v1, v2) + scene.Model.Rotation ;
+                    scene.Model.Rotation = rotateVector;
+                    PictureBox.Image = scene.RenderScene();
+            }
+            prevPoint = curPoint;
+        }
+
+        private void Form1_Scroll(object sender, ScrollEventArgs e)
+        {
+
+        }
     }
 }

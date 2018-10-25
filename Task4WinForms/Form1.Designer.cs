@@ -62,6 +62,7 @@
             this.PictureBox.Size = new System.Drawing.Size(1567, 545);
             this.PictureBox.TabIndex = 0;
             this.PictureBox.TabStop = false;
+            this.PictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseMove);
             // 
             // menuStrip1
             // 
