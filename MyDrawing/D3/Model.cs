@@ -265,7 +265,7 @@ namespace MyDrawing.D3
 
         private void InitializeZBuffer(int width, int height)
         {
-            ZBuffer = new float[width + 1, height + 1];
+            ZBuffer = new float[3000, 3000];
             for (var i = 0; i < ZBuffer.GetLength(0); i++)
             for (var j = 0; j < ZBuffer.GetLength(1); j++)
                 ZBuffer[i, j] = float.MinValue;
@@ -346,7 +346,7 @@ namespace MyDrawing.D3
             var maxY = Vertices.Max(x => x.Y);
             var minY = Vertices.Min(x => x.Y);
 
-            int ampX = (int) Math.Floor(maxX - minX), ampY = (int) Math.Floor(maxY - minY);
+            int ampX = (int) Math.Ceiling(Math.Abs(maxX) + Math.Abs(minX)), ampY = (int) Math.Ceiling(Math.Abs(maxY) + Math.Abs(minY));
             width = ampX;
             height = ampY;
         }
