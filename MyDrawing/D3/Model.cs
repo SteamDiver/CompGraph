@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MyDrawing.D3
 {
@@ -16,7 +18,7 @@ namespace MyDrawing.D3
         public List<Vertex2D> TextureCoordinates { get; set; } = new List<Vertex2D>();
         public Bitmap ModelBitmap { get; set; }
         public Bitmap TextureMap { get; set; }
-
+        public Color[,] RenderedColors;
         public Vector Translation { get; set; } = new Vector(0, 0, 0);
         public Vector Scale { get; set; } = new Vector(1, 1, 1);
         public Vector Rotation { get; set; } = new Vector(0, 0, 0);
@@ -247,13 +249,14 @@ namespace MyDrawing.D3
                     if (z > ZBuffer[xResult, yResult])
                         if (TextureCoordinates.Count > 0)
                         {
-                            var texel = FindTexel(t.C1, t.C2, t.C3, a, b, g);
+                            var texel = Color.Gray;// FindTexel(t.C1, t.C2, t.C3, a, b, g);
                             foreach (var light in lights)
                                 texel = light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a, b, g);
 
-                            if (ModelBitmap.Width > xResult && yResult < ModelBitmap.Height)
+                            if (RenderedColors.GetUpperBound(0) > xResult && yResult < RenderedColors.GetUpperBound(1))
                             {
-                                ModelBitmap.SetPixel(xResult, yResult, texel);
+                                //ModelBitmap.SetPixel(xResult, yResult, texel);
+                                RenderedColors[xResult, yResult]= texel;
                                 ZBuffer[xResult, yResult] = z;
                             }
                         }
@@ -281,8 +284,11 @@ namespace MyDrawing.D3
             Graphics.FromImage(ModelBitmap).SmoothingMode = SmoothingMode.AntiAlias;
             InitializeZBuffer(width, height);
             NormalizeAllVertexNormals();
-            foreach (var t in Triangles)
-                CompleteTriangleDraw(t, t.Norm, width, height, lights);
+            RenderedColors = new Color[width, height];
+            Parallel.ForEach(Triangles, (t) =>
+                CompleteTriangleDraw(t, t.Norm, width, height, lights)
+            );
+
         }
 
         #endregion
@@ -322,6 +328,14 @@ namespace MyDrawing.D3
         {
             TransformModel(Translation, Scale, Rotation);
             CompleteModelDraw(lights);
+
+            for (int i = 0; i < RenderedColors.GetUpperBound(0); i++)
+            {
+                for (int j = 0; j < RenderedColors.GetUpperBound(1); j++)
+                {
+                    ModelBitmap.SetPixel(i, j, RenderedColors[i,j]);
+                }
+            }
             return ModelBitmap;
         }
 
