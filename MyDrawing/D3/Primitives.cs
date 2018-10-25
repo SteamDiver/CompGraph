@@ -137,10 +137,7 @@ namespace MyDrawing.D3
         public Vertex2D C1;
         public Vertex2D C2;
         public Vertex2D C3;
-        public Vector Norm
-        {
-            get { return GetNorm(); }
-        }
+        public Vector Norm => GetNorm();
 
         public Triangle(Vertex v1, Vertex v2, Vertex v3, Vertex2D c1, Vertex2D c2, Vertex2D c3)
         {

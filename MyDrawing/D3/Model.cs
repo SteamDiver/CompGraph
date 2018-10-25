@@ -5,7 +5,6 @@ using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using MyDrawing.VisualObjects;
 
 namespace MyDrawing.D3
 {
@@ -38,7 +37,9 @@ namespace MyDrawing.D3
         private void SetTextureImage(string pathTextureImage)
         {
             if (pathTextureImage != "")
-                TextureMap = (Bitmap)Image.FromFile(pathTextureImage);
+            {
+                TextureMap = (Bitmap) Image.FromFile(pathTextureImage);
+            }
             else
             {
                 var bmp = new Bitmap(1, 1);
@@ -60,7 +61,6 @@ namespace MyDrawing.D3
 
                 string line;
                 while ((line = myReader.ReadLine()) != null)
-                {
                     if (line != "")
                     {
                         line = line.Trim(' ');
@@ -69,75 +69,71 @@ namespace MyDrawing.D3
                         switch (line[0])
                         {
                             case 'v':
+                            {
+                                if (line[1] != 't' && line[1] != 'n')
                                 {
-                                    if (line[1] != 't' && line[1] != 'n')
+                                    line = line.Trim('v', ' ');
+                                    array = line.Split(' ');
+                                    for (var i = 0; i < 3; i++)
+                                        coord[i] = double.Parse(array[i], CultureInfo.InvariantCulture);
+
+                                    var v = new Vertex(coord[0], coord[1], coord[2]);
+                                    Vertices.Add(v);
+                                }
+                                else
+                                {
+                                    if (line[1] == 't')
                                     {
-                                        line = line.Trim('v', ' ');
+                                        line = line.Trim('t', 'v', ' ');
                                         array = line.Split(' ');
-                                        for (int i = 0; i < 3; i++)
-                                        {
+                                        for (var i = 0; i < 2; i++)
                                             coord[i] = double.Parse(array[i], CultureInfo.InvariantCulture);
-                                        }
 
-                                        Vertex v = new Vertex(coord[0], coord[1], coord[2]);
-                                        Vertices.Add(v);
+                                        var v = new Vertex2D(coord[0], coord[1]);
+                                        TextureCoordinates.Add(v);
                                     }
-                                    else
-                                    {
-                                        if (line[1] == 't')
-                                        {
-                                            line = line.Trim('t', 'v', ' ');
-                                            array = line.Split(' ');
-                                            for (int i = 0; i < 2; i++)
-                                            {
-                                                coord[i] = double.Parse(array[i], CultureInfo.InvariantCulture);
-                                            }
-
-                                            Vertex2D v = new Vertex2D(coord[0], coord[1]);
-                                            TextureCoordinates.Add(v);
-                                        }
-                                    }
-
-                                    break;
                                 }
+
+                                break;
+                            }
                             case 'f':
+                            {
+                                line = line.Trim('f', ' ');
+                                array = line.Split(new[] {' ', '/'},
+                                    StringSplitOptions.RemoveEmptyEntries);
+                                if (array.Length == 9)
                                 {
-                                    line = line.Trim('f', ' ');
-                                    array = line.Split(new[] { ' ', '/' },
-                                        StringSplitOptions.RemoveEmptyEntries);
-                                    if (array.Length == 9)
+                                    for (int i = 0, j = 0; i < 3 && j < array.Length; i++, j += 3)
                                     {
-                                        for (int i = 0, j = 0; i < 3 && j < array.Length; i++, j += 3)
-                                        {
-                                            tri[i] = int.Parse(array[j]);
-                                            tex[i] = int.Parse(array[j + 1]);
-                                        }
-
-                                        Triangle t = new Triangle(Vertices[tri[0] - 1], Vertices[tri[1] - 1],
-                                            Vertices[tri[2] - 1], TextureCoordinates[tex[0] - 1],
-                                            TextureCoordinates[tex[1] - 1], TextureCoordinates[tex[2] - 1]);
-                                        Triangles.Add(t);
+                                        tri[i] = int.Parse(array[j]);
+                                        tex[i] = int.Parse(array[j + 1]);
                                     }
 
-                                    if (array.Length == 12)
-                                    {
-                                        for (int i = 0, j = 0; i < 4 && j < array.Length; i++, j += 3)
-                                        {
-                                            quad[i] = int.Parse(array[j]);
-                                            tex[i] = int.Parse(array[j + 1]);
-                                        }
-
-                                        Quad q = new Quad(Vertices[quad[0] - 1], Vertices[quad[1] - 1], Vertices[quad[2] - 1],
-                                            Vertices[quad[3] - 1], TextureCoordinates[tex[0] - 1],
-                                            TextureCoordinates[tex[1] - 1], TextureCoordinates[tex[2] - 1],
-                                            TextureCoordinates[tex[3] - 1]);
-                                        Quads.Add(q);
-                                    }
+                                    var t = new Triangle(Vertices[tri[0] - 1], Vertices[tri[1] - 1],
+                                        Vertices[tri[2] - 1], TextureCoordinates[tex[0] - 1],
+                                        TextureCoordinates[tex[1] - 1], TextureCoordinates[tex[2] - 1]);
+                                    Triangles.Add(t);
                                 }
-                                    break;
+
+                                if (array.Length == 12)
+                                {
+                                    for (int i = 0, j = 0; i < 4 && j < array.Length; i++, j += 3)
+                                    {
+                                        quad[i] = int.Parse(array[j]);
+                                        tex[i] = int.Parse(array[j + 1]);
+                                    }
+
+                                    var q = new Quad(Vertices[quad[0] - 1], Vertices[quad[1] - 1],
+                                        Vertices[quad[2] - 1],
+                                        Vertices[quad[3] - 1], TextureCoordinates[tex[0] - 1],
+                                        TextureCoordinates[tex[1] - 1], TextureCoordinates[tex[2] - 1],
+                                        TextureCoordinates[tex[3] - 1]);
+                                    Quads.Add(q);
+                                }
+                            }
+                                break;
                         }
                     }
-                }
             }
         }
 
@@ -148,13 +144,13 @@ namespace MyDrawing.D3
         //=============================РАБОТА С ВЕКТОРАМИ===================================
 
         /// <summary>
-        /// Нормализуем векторы(нормали) для каждой вершины модели
+        ///     Нормализуем векторы(нормали) для каждой вершины модели
         /// </summary>
         private void NormalizeAllVertexNormals()
         {
             foreach (var v in Vertices)
                 v.VNormal.Normalize();
-        } 
+        }
 
         #endregion
 
@@ -162,16 +158,17 @@ namespace MyDrawing.D3
 
         //=============================ПОСТРОЕНИЕ МОДЕЛИ===================================
 
-        private void SplitQuads() //Разделение четырехугольного полигона на треугольники
+        /// <summary>
+        ///     Разделение четырехугольного полигона на треугольники
+        /// </summary>
+        private void SplitQuads()
         {
             foreach (var q in Quads)
             {
                 Triangles.Add(new Triangle(q.V1, q.V2, q.V3, q.C1, q.C2, q.C3));
                 Triangles.Add(new Triangle(q.V3, q.V4, q.V1, q.C3, q.C4, q.C1));
             }
-        } //Разобьем квадраты на треугольники
-
-
+        }
 
         #endregion
 
@@ -180,7 +177,7 @@ namespace MyDrawing.D3
         //=======================РАБОТА С ТРЕУГОЛЬНИКАМИ=============================
 
         /// <summary>
-        /// Проверка точки на принадлежность треугольнику
+        ///     Проверка точки на принадлежность треугольнику
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -189,7 +186,8 @@ namespace MyDrawing.D3
         /// <param name="beta"></param>
         /// <param name="gamma"></param>
         /// <returns></returns>
-        private static bool IsPointInsideTriangle(double x, double y, Triangle t, out double alpha , out double beta, out double gamma)
+        private static bool IsPointInsideTriangle(double x, double y, Triangle t, out double alpha, out double beta,
+            out double gamma)
         {
             var denominator = (t.V2.Y - t.V3.Y) * (t.V1.X - t.V3.X) + (t.V3.X - t.V2.X) * (t.V1.Y - t.V3.Y);
             alpha = ((t.V2.Y - t.V3.Y) * (x - t.V3.X) + (t.V3.X - t.V2.X) * (y - t.V3.Y)) / denominator;
@@ -201,7 +199,7 @@ namespace MyDrawing.D3
         #endregion
 
         /// <summary>
-        /// Нахождение соответствующего пикселя на текстуре
+        ///     Нахождение соответствующего пикселя на текстуре
         /// </summary>
         /// <param name="c1"></param>
         /// <param name="c2"></param>
@@ -215,8 +213,8 @@ namespace MyDrawing.D3
             var w = TextureMap.Width;
             var h = TextureMap.Height;
             var u = a * c1.U + b * c2.U + g * c3.U;
-            var v = a * (1 - c1.V) + b * (1 - c2.V) + g * (1 - c3.V) -1e-10;
-            var texel = TextureMap.GetPixel((int)(u * w), (int)(v * h));
+            var v = a * (1 - c1.V) + b * (1 - c2.V) + g * (1 - c3.V) - 1e-10;
+            var texel = TextureMap.GetPixel((int) (u * w), (int) (v * h));
             return texel;
         }
 
@@ -227,51 +225,47 @@ namespace MyDrawing.D3
         {
             double A = v.X, B = v.Y, C = v.Z;
             var D = -(A * t.V1.X + B * t.V1.Y + C * t.V1.Z);
-            var maxX = Math.Max((int)t.V1.X,
-                (int)Math.Max(t.V2.X, t.V3.X)); //
-            var minX = Math.Min((int)t.V1.X,
-                (int)Math.Min(t.V2.X,
+            var maxX = Math.Max((int) t.V1.X,
+                (int) Math.Max(t.V2.X, t.V3.X)); //
+            var minX = Math.Min((int) t.V1.X,
+                (int) Math.Min(t.V2.X,
                     t.V3.X)); //прямоугольник, который ограничивает треугольник
-            var maxY = Math.Max((int)t.V1.Y,
-                (int)Math.Max(t.V2.Y, t.V3.Y)); //
-            var minY = Math.Min((int)t.V1.Y,
-                (int)Math.Min(t.V2.Y, t.V3.Y)); //
+            var maxY = Math.Max((int) t.V1.Y,
+                (int) Math.Max(t.V2.Y, t.V3.Y)); //
+            var minY = Math.Min((int) t.V1.Y,
+                (int) Math.Min(t.V2.Y, t.V3.Y)); //
             int horizontalShift = modelWidth / 2, verticalShift = modelHeight / 2;
             //движемся по пикселям внутри треугольника и проверяем, принадлежит ли конкретный пиксель треугольнику
             for (var x = minX; x <= maxX; x++)
-                for (var y = minY; y <= maxY; y++)
-                {
-                    var z = -(A * x + B * y + D) / C;
-                    var xResult = x + horizontalShift;
-                    var yResult = -y + verticalShift;
-                    if (IsPointInsideTriangle(x, y, t, out double a,
-                            out double b, out double g) && yResult > 0 && xResult > 0)
-                        if (z > ZBuffer[xResult, yResult])
+            for (var y = minY; y <= maxY; y++)
+            {
+                var z = -(A * x + B * y + D) / C;
+                var xResult = x + horizontalShift;
+                var yResult = -y + verticalShift;
+                if (IsPointInsideTriangle(x, y, t, out var a,
+                        out var b, out var g) && yResult > 0 && xResult > 0)
+                    if (z > ZBuffer[xResult, yResult])
+                        if (TextureCoordinates.Count > 0)
                         {
-                            if (TextureCoordinates.Count > 0)
-                            {
-                                var texel = FindTexel(t.C1, t.C2, t.C3, a, b, g);
-                                foreach (var light in lights)
-                                {
-                                    texel = light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a, b, g);
-                                }
+                            var texel = FindTexel(t.C1, t.C2, t.C3, a, b, g);
+                            foreach (var light in lights)
+                                texel = light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a, b, g);
 
-                                if (ModelBitmap.Width > xResult && yResult < ModelBitmap.Height)
-                                {
-                                    ModelBitmap.SetPixel(xResult, yResult, texel);
-                                    ZBuffer[xResult, yResult] = z;
-                                }
+                            if (ModelBitmap.Width > xResult && yResult < ModelBitmap.Height)
+                            {
+                                ModelBitmap.SetPixel(xResult, yResult, texel);
+                                ZBuffer[xResult, yResult] = z;
                             }
                         }
-                }
+            }
         }
 
         private void InitializeZBuffer(int width, int height)
         {
             ZBuffer = new double[2 * width, 2 * height];
             for (var i = 0; i < ZBuffer.GetLength(0); i++)
-                for (var j = 0; j < ZBuffer.GetLength(1); j++)
-                    ZBuffer[i, j] = float.MinValue;
+            for (var j = 0; j < ZBuffer.GetLength(1); j++)
+                ZBuffer[i, j] = float.MinValue;
         }
 
         #endregion
@@ -282,7 +276,7 @@ namespace MyDrawing.D3
 
         private void CompleteModelDraw(List<Light> lights)
         {
-            FindAreaSize(out int width, out int height);
+            FindAreaSize(out var width, out var height);
             ModelBitmap = new Bitmap(width, height);
             Graphics.FromImage(ModelBitmap).SmoothingMode = SmoothingMode.AntiAlias;
             InitializeZBuffer(width, height);
@@ -298,7 +292,7 @@ namespace MyDrawing.D3
         //========================ТРАНСФОРМАЦИЯ МОДЕЛИ===================================
 
         /// <summary>
-        ///         Находим координаты для вершины после трансформации
+        ///     Находим координаты для вершины после трансформации
         /// </summary>
         /// <param name="vertexCoord"></param>
         /// <param name="translate"></param>
@@ -307,13 +301,13 @@ namespace MyDrawing.D3
         /// <param name="projectValues"></param>
         /// <returns></returns>
         private MatrixVector TransformCoordinates(MatrixVector vertexCoord, Vector translate, Vector scale,
-                Vector rotation)
+            Vector rotation)
         {
             return ModelTransform.CoordAfterTransformation(vertexCoord, ModelTransform.GetScaleMatrix(scale),
                 ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation));
         }
 
-        private void TransformModel(Vector translation,Vector scale, Vector rotation)
+        private void TransformModel(Vector translation, Vector scale, Vector rotation)
         {
             foreach (var v in Vertices)
             {
@@ -337,8 +331,8 @@ namespace MyDrawing.D3
             var minX = Vertices.Min(x => x.X);
             var maxY = Vertices.Max(x => x.Y);
             var minY = Vertices.Min(x => x.Y);
-            
-            int ampX = (int)Math.Ceiling(maxX - minX), ampY = (int)Math.Ceiling(maxY - minY);
+
+            int ampX = (int) Math.Ceiling(maxX - minX), ampY = (int) Math.Ceiling(maxY - minY);
             width = ampX;
             height = ampY;
         }
