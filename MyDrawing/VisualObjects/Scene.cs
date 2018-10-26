@@ -10,8 +10,7 @@ namespace MyDrawing.VisualObjects
 {
     public class Scene
     {
-        private Bitmap _renderScene;
-        public Bitmap Bmp { get; }
+        public Bitmap Bmp;
         public Model Model { get; set; }
         public List<Light> Lights { get; set; } = new List<Light>();
         public Camera Camera { get; set; } = new Camera(new Vector(0, 0, 1));
@@ -32,9 +31,7 @@ namespace MyDrawing.VisualObjects
 
         public Bitmap RenderScene()
         {
-            _renderScene = Bmp;
-            Model.Draw(ref _renderScene, Lights, WorldCenter);
-            return Bmp;
+            return Model.Draw( Bmp, Lights, WorldCenter);
         }
     }
 }

@@ -231,8 +231,6 @@ namespace MyDrawing.D3
             int minX = (int)Math.Min(t.V1.X, Math.Min(t.V2.X, t.V3.X)); //прямоугольник, который ограничивает треугольник
             var maxY = (int)Math.Max(t.V1.Y, Math.Max(t.V2.Y, t.V3.Y)); //
             var minY = (int)Math.Min(t.V1.Y, Math.Min(t.V2.Y, t.V3.Y)); //
-            int horizontalShift = RenderedColors.GetUpperBound(0) / 2,
-                verticalShift = RenderedColors.GetUpperBound(1) / 2;
 
             //движемся по пикселям внутри треугольника и проверяем, принадлежит ли конкретный пиксель треугольнику
             for (var x = minX; x <= maxX; x++)
@@ -244,7 +242,7 @@ namespace MyDrawing.D3
                     var yResult = -y;
                     if (IsPointInsideTriangle(x, y, t, out var a,
                             out var b, out var g) && yResult > 0 && xResult > 0)
-                        if (z > ZBuffer[xResult, yResult])
+                        if (z - ZBuffer[xResult, yResult] > 1e-20)
                             if (TextureCoordinates.Count > 0)
                             {
                                 var texel = Color.Azure; // FindTexel(t.C1, t.C2, t.C3, a, b, g);
@@ -252,7 +250,7 @@ namespace MyDrawing.D3
                                 foreach (var light in lights)
                                     texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel,
                                         a, b, g));
-                                texel = Light.GetItogTexel(texels);
+                                texel = texels[0];
                                 if (RenderedColors.GetUpperBound(0) >= xResult && yResult <= RenderedColors.GetUpperBound(1))
                                 {
                                     //ModelBitmap.SetPixel(xResult, yResult, texel);
@@ -324,20 +322,21 @@ namespace MyDrawing.D3
             }
         } //Обращаем все координаты
 
-        internal void Draw(ref Bitmap bmp, List<Light> lights, Point worldCenter)
+        internal Bitmap Draw(Bitmap bmp, List<Light> lights, Point worldCenter)
         {
             TransformModel(Translation + new Vector(worldCenter.X, worldCenter.Y, 0), Scale, Rotation);
             CompleteModelDraw(lights);
-
+            DirectBitmap b = new DirectBitmap(bmp.Width, bmp.Height);
             for (int i = 0; i < RenderedColors.GetUpperBound(0); i++)
             {
                 for (int j = 0; j < RenderedColors.GetUpperBound(1); j++)
                 {
-                    if (i < bmp.Width && j < bmp.Height)
-                        bmp.SetPixel(i, j, RenderedColors[i, j]);
+                    if (i < b.Width && j < b.Height)
+                        b.SetPixel(i, j, RenderedColors[i, j]);
                 }
             }
-            Graphics.FromImage(bmp).FillEllipse(Brushes.Red, worldCenter.X, -worldCenter.Y, 4, 4 );
+
+            return b.Bitmap;
         }
 
         private void FindAreaSize(out int width, out int height)
