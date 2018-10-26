@@ -27,9 +27,7 @@ namespace Task4WinForms
 
         private List<Light> lights = new List<Light>()
         {
-            new DiffuseLight(new Vector(0, 0, 1)),
-            new DiffuseLight(new Vector(1, 1, 1)),
-
+            new DiffuseLight(new Vector(0, 0, 1))
         };
 
         public Form1()
@@ -77,7 +75,7 @@ namespace Task4WinForms
                 Rotation = rotation
             };
             scene = new Scene(alex, lights, new Camera(new Vector(0, 0, 1)));
-            PictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            PictureBox.SizeMode = PictureBoxSizeMode.Normal;
             PictureBox.Image = scene.RenderScene();
         }
 

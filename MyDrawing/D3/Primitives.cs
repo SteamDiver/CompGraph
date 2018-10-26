@@ -125,6 +125,8 @@ namespace MyDrawing.D3
         /// <returns></returns>
         public static double CosCalc(Vector v1, Vector v2)
         {
+            v1.Normalize();
+            v2.Normalize();
             return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
         } 
     }

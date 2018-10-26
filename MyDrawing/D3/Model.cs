@@ -181,8 +181,8 @@ namespace MyDrawing.D3
         /// <summary>
         ///     Проверка точки на принадлежность треугольнику
         /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
+        /// <param name="x">x</param>
+        /// <param name="y">y</param>
         /// <param name="t">Треугольник</param>
         /// <param name="alpha"></param>
         /// <param name="beta"></param>
