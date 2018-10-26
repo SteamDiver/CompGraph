@@ -59,7 +59,7 @@
             this.PictureBox.Location = new System.Drawing.Point(16, 117);
             this.PictureBox.Margin = new System.Windows.Forms.Padding(4);
             this.PictureBox.Name = "PictureBox";
-            this.PictureBox.Size = new System.Drawing.Size(1567, 545);
+            this.PictureBox.Size = new System.Drawing.Size(1567, 643);
             this.PictureBox.TabIndex = 0;
             this.PictureBox.TabStop = false;
             this.PictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseMove);
@@ -240,7 +240,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1599, 677);
+            this.ClientSize = new System.Drawing.Size(1599, 773);
             this.Controls.Add(this.RedrawBtn);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);

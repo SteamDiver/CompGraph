@@ -12,7 +12,8 @@ namespace MyDrawing.D3
 {
     public class Model
     {
-        public List<Vertex> Vertices { get; set; } = new List<Vertex>();
+        public List<Vertex> Vertices { get;
+            set; } = new List<Vertex>();
         public List<Triangle> Triangles { get; set; } = new List<Triangle>();
         public List<Quad> Quads { get; set; } = new List<Quad>();
         public List<Vertex2D> TextureCoordinates { get; set; } = new List<Vertex2D>();
@@ -215,7 +216,7 @@ namespace MyDrawing.D3
             var w = TextureMap.Width;
             var h = TextureMap.Height;
             var u = a * c1.U + b * c2.U + g * c3.U;
-            var v = a * (1 - c1.V) + b * (1 - c2.V) + g * (1 - c3.V) - 1e-10;
+            var v = a * (1 - c1.V) + b * (1 - c2.V) + g * (1 - c3.V);
             var texel = TextureMap.GetPixel((int) (u * w), (int) (v * h));
             return texel;
         }
@@ -227,40 +228,39 @@ namespace MyDrawing.D3
             Vector v = t.Norm;
             double A = v.X, B = v.Y, C = v.Z;
             var D = -(A * t.V1.X + B * t.V1.Y + C * t.V1.Z);
-            var maxX = Math.Max((int) t.V1.X,
-                (int) Math.Max(t.V2.X, t.V3.X)); //
-            var minX = Math.Min((int) t.V1.X,
-                (int) Math.Min(t.V2.X,
-                    t.V3.X)); //прямоугольник, который ограничивает треугольник
-            var maxY = Math.Max((int) t.V1.Y,
-                (int) Math.Max(t.V2.Y, t.V3.Y)); //
-            var minY = Math.Min((int) t.V1.Y,
-                (int) Math.Min(t.V2.Y, t.V3.Y)); //
+            int maxX = (int)Math.Max(t.V1.X, Math.Max(t.V2.X, t.V3.X)); //
+            int minX = (int)Math.Min(t.V1.X, Math.Min(t.V2.X, t.V3.X)); //прямоугольник, который ограничивает треугольник
+            var maxY = (int)Math.Max(t.V1.Y, Math.Max(t.V2.Y, t.V3.Y)); //
+            var minY = (int)Math.Min(t.V1.Y, Math.Min(t.V2.Y, t.V3.Y)); //
             int horizontalShift = modelWidth / 2, verticalShift = modelHeight / 2;
+
             //движемся по пикселям внутри треугольника и проверяем, принадлежит ли конкретный пиксель треугольнику
             for (var x = minX; x <= maxX; x++)
-            for (var y = minY; y <= maxY; y++)
             {
-                var z = -(A * x + B * y + D) / C;
-                var xResult = x + horizontalShift;
-                var yResult = -y + verticalShift;
-                if (IsPointInsideTriangle(x, y, t, out var a,
-                        out var b, out var g) && yResult > 0 && xResult > 0)
-                    if (z > ZBuffer[xResult, yResult])
-                        if (TextureCoordinates.Count > 0)
-                        {
-                            var texel = Color.Gray;// FindTexel(t.C1, t.C2, t.C3, a, b, g);
-                            List<Color> texels = new List<Color>();
-                            foreach (var light in lights)
-                                texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a/lights.Count, b / lights.Count, g / lights.Count));
-                            texel = Light.GetItogTexel(texels);
-                            if (RenderedColors.GetUpperBound(0) > xResult && yResult < RenderedColors.GetUpperBound(1))
+                for (var y = minY; y <= maxY; y++)
+                {
+                    var z = -(A * x + B * y + D) / C;
+                    var xResult = x + horizontalShift;
+                    var yResult = -y + verticalShift;
+                    if (IsPointInsideTriangle(x, y, t, out var a,
+                            out var b, out var g) && yResult > 0 && xResult > 0)
+                        if (z > ZBuffer[xResult, yResult])
+                            if (TextureCoordinates.Count > 0)
                             {
-                                //ModelBitmap.SetPixel(xResult, yResult, texel);
-                                RenderedColors[xResult, yResult]= texel;
-                                ZBuffer[xResult, yResult] = (float)z;
+                                var texel = Color.Gray; // FindTexel(t.C1, t.C2, t.C3, a, b, g);
+                                List<Color> texels = new List<Color>();
+                                foreach (var light in lights)
+                                    texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel,
+                                        a, b, g));
+                                texel = Light.GetItogTexel(texels);
+                                if (RenderedColors.GetUpperBound(0) >= xResult && yResult <= RenderedColors.GetUpperBound(1))
+                                {
+                                    //ModelBitmap.SetPixel(xResult, yResult, texel);
+                                    RenderedColors[xResult, yResult] = texel;
+                                    ZBuffer[xResult, yResult] = (float) z;
+                                }
                             }
-                        }
+                }
             }
         }
 
@@ -280,11 +280,12 @@ namespace MyDrawing.D3
 
         private void CompleteModelDraw(List<Light> lights)
         {
+            NormalizeAllVertexNormals();
             FindAreaSize(out var width, out var height);
             ModelBitmap = new Bitmap(width, height);
             Graphics.FromImage(ModelBitmap).SmoothingMode = SmoothingMode.AntiAlias;
+            Graphics.FromImage(ModelBitmap).Clear(Color.Aqua);
             InitializeZBuffer(width, height);
-            NormalizeAllVertexNormals();
             RenderedColors = new Color[width, height];
             Parallel.ForEach(Triangles, (t) =>
                 CompleteTriangleDraw(t, width, height, lights)
@@ -342,12 +343,17 @@ namespace MyDrawing.D3
 
         private void FindAreaSize(out int width, out int height)
         {
+            //var maxX = Vertices.Max(x => x.X);
+            //var minX = Vertices.Min(x => x.X);
+            //var maxY = Vertices.Max(x => x.Y);
+            //var minY = Vertices.Min(x => x.Y);
+
             var maxX = Vertices.Max(x => x.X);
             var minX = Vertices.Min(x => x.X);
             var maxY = Vertices.Max(x => x.Y);
             var minY = Vertices.Min(x => x.Y);
 
-            int ampX = (int) Math.Ceiling(Math.Abs(maxX) + Math.Abs(minX)), ampY = (int) Math.Ceiling(Math.Abs(maxY) + Math.Abs(minY));
+            int ampX = (int)(Math.Abs(maxX) + Math.Abs(minX) + 2), ampY = (int) (Math.Abs(maxY) + Math.Abs(minY) + 2);
             width = ampX;
             height = ampY;
         }
