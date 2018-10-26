@@ -8,18 +8,30 @@ namespace MyDrawing.D3
        
         public static Matrix3D GetScaleMatrix(Vector scaleVector)
         {
-            Matrix3D result = new Matrix3D(new double[,]{ { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } });
-            result.Matrix[0, 0] = scaleVector.X;
-            result.Matrix[1, 1] = scaleVector.Y;
-            result.Matrix[2, 2] = scaleVector.Z;
+            Matrix3D result =
+                new Matrix3D(new double[,] {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}})
+                {
+                    Matrix =
+                    {
+                        [0, 0] = scaleVector.X,
+                        [1, 1] = scaleVector.Y,
+                        [2, 2] = scaleVector.Z
+                    }
+                };
             return result;
         }
         public static Matrix3D GetTranslateMatrix(Vector translateVector)
         {
-            Matrix3D result = new Matrix3D(new double[,]{ { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } });
-            result.Matrix[0, 3] = translateVector.X;
-            result.Matrix[1, 3] = translateVector.Y;
-            result.Matrix[2, 3] = translateVector.Z;
+            Matrix3D result =
+                new Matrix3D(new double[,] {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}})
+                {
+                    Matrix =
+                    {
+                        [0, 3] = translateVector.X,
+                        [1, 3] = translateVector.Y,
+                        [2, 3] = translateVector.Z
+                    }
+                };
             return result;
         }
 
@@ -51,18 +63,23 @@ namespace MyDrawing.D3
 
         public static Matrix3D GetProjectionMatrix(double value)
         {
-            Matrix3D result = new Matrix3D(new double[,]{ { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0}, { 0, 0, 0, 1 } });
-            result.Matrix[3, 2] = 1 / value; 
+            Matrix3D result =
+                new Matrix3D(new double[,] {{1, 0, 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}})
+                {
+                    Matrix = {[3, 2] = 1 / value}
+                };
+
             return result;
         }
 
-        public static MatrixVector CoordAfterTransformation(MatrixVector xyz, Matrix3D mScale, Matrix3D mTranslate, Matrix3D mRotate)
+        public static MatrixVector CoordAfterTransformation(MatrixVector xyz, Matrix3D mScale, Matrix3D mTranslate, Matrix3D mRotate, Matrix3D mProj)
         {
             MatrixVector result = mTranslate * (mRotate * (mScale * xyz));
-            for (int i = 0; i < 3; i++)
-            {
-                result.Vector[i] /= result.Vector[3];
-            }
+            
+            result.X /= result.W;
+            result.Y /= result.W;
+            result.Z /= result.W;
+
             return result;
 
         }
@@ -102,16 +119,17 @@ class Matrix3D
     public static MatrixVector operator *(Matrix3D matrix, MatrixVector vector)
     {
         double[] result = new double[4];
+        double[] v = new double[]{vector.X, vector.Y, vector.Z, vector.W};
         for (int i = 0; i < 4; i++)
         {
             double sum = 0;
             for (int j = 0; j < 4; j++)
             {
-                sum += matrix.Matrix[i, j] * vector.Vector[j];
+                sum += matrix.Matrix[i, j] * v[j];
             }
             result[i] = sum;
         }
-        return new MatrixVector(result);
+        return new MatrixVector(result[0], result[1], result[2], result[3]);
     }
 
 

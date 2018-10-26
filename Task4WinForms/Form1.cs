@@ -76,8 +76,8 @@ namespace Task4WinForms
                 Scale = scale,
                 Rotation = rotation
             };
-            scene = new Scene(alex, lights, new Camera(new Vector(0, 0, 1)));
-            PictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            scene = new Scene(_bmp, alex, lights, new Camera(new Vector(0, 0, 1)), new Point(PictureBox.Width / 2, -PictureBox.Height / 2));
+            PictureBox.SizeMode = PictureBoxSizeMode.Normal;
             PictureBox.Image = scene.RenderScene();
         }
 

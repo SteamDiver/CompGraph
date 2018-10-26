@@ -17,7 +17,6 @@ namespace MyDrawing.D3
         public List<Triangle> Triangles { get; set; } = new List<Triangle>();
         public List<Quad> Quads { get; set; } = new List<Quad>();
         public List<Vertex2D> TextureCoordinates { get; set; } = new List<Vertex2D>();
-        public Bitmap ModelBitmap { get; set; }
         public Bitmap TextureMap { get; set; }
         public Color[,] RenderedColors;
         public Vector Translation { get; set; } = new Vector(0, 0, 0);
@@ -232,7 +231,8 @@ namespace MyDrawing.D3
             int minX = (int)Math.Min(t.V1.X, Math.Min(t.V2.X, t.V3.X)); //прямоугольник, который ограничивает треугольник
             var maxY = (int)Math.Max(t.V1.Y, Math.Max(t.V2.Y, t.V3.Y)); //
             var minY = (int)Math.Min(t.V1.Y, Math.Min(t.V2.Y, t.V3.Y)); //
-            int horizontalShift = modelWidth / 2, verticalShift = modelHeight / 2;
+            int horizontalShift = RenderedColors.GetUpperBound(0) / 2,
+                verticalShift = RenderedColors.GetUpperBound(1) / 2;
 
             //движемся по пикселям внутри треугольника и проверяем, принадлежит ли конкретный пиксель треугольнику
             for (var x = minX; x <= maxX; x++)
@@ -240,14 +240,14 @@ namespace MyDrawing.D3
                 for (var y = minY; y <= maxY; y++)
                 {
                     var z = -(A * x + B * y + D) / C;
-                    var xResult = x + horizontalShift;
-                    var yResult = -y + verticalShift;
+                    var xResult = x;
+                    var yResult = -y;
                     if (IsPointInsideTriangle(x, y, t, out var a,
                             out var b, out var g) && yResult > 0 && xResult > 0)
                         if (z > ZBuffer[xResult, yResult])
                             if (TextureCoordinates.Count > 0)
                             {
-                                var texel = Color.Gray; // FindTexel(t.C1, t.C2, t.C3, a, b, g);
+                                var texel = Color.Azure; // FindTexel(t.C1, t.C2, t.C3, a, b, g);
                                 List<Color> texels = new List<Color>();
                                 foreach (var light in lights)
                                     texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel,
@@ -266,7 +266,7 @@ namespace MyDrawing.D3
 
         private void InitializeZBuffer(int width, int height)
         {
-            ZBuffer = new float[3000, 3000];
+            ZBuffer = new float[width, height];
             for (var i = 0; i < ZBuffer.GetLength(0); i++)
             for (var j = 0; j < ZBuffer.GetLength(1); j++)
                 ZBuffer[i, j] = float.MinValue;
@@ -282,11 +282,9 @@ namespace MyDrawing.D3
         {
             NormalizeAllVertexNormals();
             FindAreaSize(out var width, out var height);
-            ModelBitmap = new Bitmap(width, height);
-            Graphics.FromImage(ModelBitmap).SmoothingMode = SmoothingMode.AntiAlias;
-            Graphics.FromImage(ModelBitmap).Clear(Color.Aqua);
             InitializeZBuffer(width, height);
-            RenderedColors = new Color[width, height];
+            RenderedColors = new Color[width,height];
+           
             Parallel.ForEach(Triangles, (t) =>
                 CompleteTriangleDraw(t, width, height, lights)
             );
@@ -312,7 +310,7 @@ namespace MyDrawing.D3
             Vector rotation)
         {
             return ModelTransform.CoordAfterTransformation(vertexCoord, ModelTransform.GetScaleMatrix(scale),
-                ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation));
+                ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation), ModelTransform.GetProjectionMatrix(1000));
         }
 
         private void TransformModel(Vector translation, Vector scale, Vector rotation)
@@ -320,34 +318,30 @@ namespace MyDrawing.D3
             foreach (var v in Vertices)
             {
                 var coordVector = TransformCoordinates(v.CoordVector, translation, scale, rotation);
-                v.X = coordVector.Vector[0];
-                v.Y = coordVector.Vector[1];
-                v.Z = coordVector.Vector[2];
+                v.X = coordVector.X;
+                v.Y = coordVector.Y;
+                v.Z = coordVector.Z;
             }
         } //Обращаем все координаты
 
-        internal Bitmap Draw(List<Light> lights)
+        internal void Draw(ref Bitmap bmp, List<Light> lights, Point worldCenter)
         {
-            TransformModel(Translation, Scale, Rotation);
+            TransformModel(Translation + new Vector(worldCenter.X, worldCenter.Y, 0), Scale, Rotation);
             CompleteModelDraw(lights);
 
             for (int i = 0; i < RenderedColors.GetUpperBound(0); i++)
             {
                 for (int j = 0; j < RenderedColors.GetUpperBound(1); j++)
                 {
-                    ModelBitmap.SetPixel(i, j, RenderedColors[i,j]);
+                    if (i < bmp.Width && j < bmp.Height)
+                        bmp.SetPixel(i, j, RenderedColors[i, j]);
                 }
             }
-            return ModelBitmap;
+            Graphics.FromImage(bmp).FillEllipse(Brushes.Red, worldCenter.X, -worldCenter.Y, 4, 4 );
         }
 
         private void FindAreaSize(out int width, out int height)
         {
-            //var maxX = Vertices.Max(x => x.X);
-            //var minX = Vertices.Min(x => x.X);
-            //var maxY = Vertices.Max(x => x.Y);
-            //var minY = Vertices.Min(x => x.Y);
-
             var maxX = Vertices.Max(x => x.X);
             var minX = Vertices.Min(x => x.X);
             var maxY = Vertices.Max(x => x.Y);

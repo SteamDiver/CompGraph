@@ -27,18 +27,24 @@ namespace MyDrawing.D3
             X = x;
             Y = y;
             Z = z;
-            CoordVector = new MatrixVector(new[]{x, y, z, 1});
+            CoordVector = new MatrixVector(x, y, z, 1);
             VNormal = new Vector(0, 0, 0);
         }
     }
 
     public struct MatrixVector
     {
-        public double[] Vector;
+        public double X;
+        public double Y;
+        public double Z;
+        public double W;
 
-        public MatrixVector(double[] vector)
+        public MatrixVector(double x, double y, double z, double w)
         {
-            Vector = vector;
+            X = x;
+            Y = y;
+            Z = z;
+            W = w;
         }
     }
 
