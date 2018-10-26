@@ -222,9 +222,9 @@ namespace MyDrawing.D3
 
         #region TriangleDraw
 
-        private void CompleteTriangleDraw(Triangle t,
-            Vector v, int modelWidth, int modelHeight, List<Light> lights)
+        private void CompleteTriangleDraw(Triangle t, int modelWidth, int modelHeight, List<Light> lights)
         {
+            Vector v = t.Norm;
             double A = v.X, B = v.Y, C = v.Z;
             var D = -(A * t.V1.X + B * t.V1.Y + C * t.V1.Z);
             var maxX = Math.Max((int) t.V1.X,
@@ -250,9 +250,10 @@ namespace MyDrawing.D3
                         if (TextureCoordinates.Count > 0)
                         {
                             var texel = Color.Gray;// FindTexel(t.C1, t.C2, t.C3, a, b, g);
+                            List<Color> texels = new List<Color>();
                             foreach (var light in lights)
-                                texel = light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a, b, g);
-
+                                texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a/lights.Count, b / lights.Count, g / lights.Count));
+                            texel = Light.GetItogTexel(texels);
                             if (RenderedColors.GetUpperBound(0) > xResult && yResult < RenderedColors.GetUpperBound(1))
                             {
                                 //ModelBitmap.SetPixel(xResult, yResult, texel);
@@ -286,7 +287,7 @@ namespace MyDrawing.D3
             NormalizeAllVertexNormals();
             RenderedColors = new Color[width, height];
             Parallel.ForEach(Triangles, (t) =>
-                CompleteTriangleDraw(t, t.Norm, width, height, lights)
+                CompleteTriangleDraw(t, width, height, lights)
             );
 
         }

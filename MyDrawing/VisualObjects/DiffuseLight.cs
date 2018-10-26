@@ -23,7 +23,9 @@ namespace MyDrawing.VisualObjects
             pNorm.Z = norm1.Z * a + norm2.Z * b + norm3.Z * g;
             var cosVal = Vector.CosCalc(pNorm, LightVector);
             if (cosVal < 0)
-                return texel;
+            {
+                return Color.FromArgb(0, 0, 0);
+            }
             var newColor = Color.FromArgb((int) (texel.R * cosVal), (int) (texel.G * cosVal),
                 (int) (texel.B * cosVal));
             return newColor;

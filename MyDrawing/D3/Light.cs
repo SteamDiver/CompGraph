@@ -28,5 +28,11 @@ namespace MyDrawing.D3
         }
 
         public abstract Color GetPixelColor(Vector norm1, Vector norm2, Vector norm3, Color texel, double a, double b, double g);
+
+        public static Color GetItogTexel(List<Color> texels)
+        {
+            return Color.FromArgb(texels.Sum(t => t.R) / texels.Count, texels.Sum(t => t.G) / texels.Count,
+                texels.Sum(t => t.B) / texels.Count);
+        }
     }
 }
