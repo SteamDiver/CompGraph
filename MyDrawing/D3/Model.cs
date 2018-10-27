@@ -323,14 +323,20 @@ namespace MyDrawing.D3
             TransformModel(Translation + new Vector(worldCenter.X, worldCenter.Y, 0), Scale, Rotation);
             CompleteModelDraw(lights);
             DirectBitmap b = new DirectBitmap(bmp.Width, bmp.Height);
-            for (int i = 0; i < RenderedColors.GetUpperBound(0); i++)
-            {
-                for (int j = 0; j < RenderedColors.GetUpperBound(1); j++)
+            Parallel.For(0, RenderedColors.GetUpperBound(0),
+                (i) =>
                 {
-                    if (i < b.Width && j < b.Height)
-                        b.SetPixel(i, j, RenderedColors[i, j]);
-                }
-            }
+                    Parallel.For(0, RenderedColors.GetUpperBound(1),
+                        (j) => { b.SetPixel(i, j, RenderedColors[i, j]); });
+                });
+            //for (int i = 0; i < RenderedColors.GetUpperBound(0); i++)
+            //{
+            //    for (int j = 0; j < RenderedColors.GetUpperBound(1); j++)
+            //    {
+            //        if (i < b.Width && j < b.Height)
+            //            b.SetPixel(i, j, RenderedColors[i, j]);
+            //    }
+            //}
 
             return b.Bitmap;
         }

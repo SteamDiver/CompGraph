@@ -56,10 +56,9 @@
             // 
             // PictureBox
             // 
-            this.PictureBox.Location = new System.Drawing.Point(16, 117);
-            this.PictureBox.Margin = new System.Windows.Forms.Padding(4);
+            this.PictureBox.Location = new System.Drawing.Point(12, 95);
             this.PictureBox.Name = "PictureBox";
-            this.PictureBox.Size = new System.Drawing.Size(985, 878);
+            this.PictureBox.Size = new System.Drawing.Size(739, 713);
             this.PictureBox.TabIndex = 0;
             this.PictureBox.TabStop = false;
             this.PictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseMove);
@@ -71,8 +70,7 @@
             this.файлToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1036, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(777, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -81,7 +79,7 @@
             this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.открытьToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(57, 24);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // открытьToolStripMenuItem
@@ -90,29 +88,28 @@
             this.ModelToolStripMenuItem,
             this.TextureToolStripMenuItem});
             this.открытьToolStripMenuItem.Name = "открытьToolStripMenuItem";
-            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(142, 26);
+            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.открытьToolStripMenuItem.Text = "Открыть";
             // 
             // ModelToolStripMenuItem
             // 
             this.ModelToolStripMenuItem.Name = "ModelToolStripMenuItem";
-            this.ModelToolStripMenuItem.Size = new System.Drawing.Size(144, 26);
+            this.ModelToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.ModelToolStripMenuItem.Text = "Модель";
             this.ModelToolStripMenuItem.Click += new System.EventHandler(this.ModelToolStripMenuItem_Click);
             // 
             // TextureToolStripMenuItem
             // 
             this.TextureToolStripMenuItem.Name = "TextureToolStripMenuItem";
-            this.TextureToolStripMenuItem.Size = new System.Drawing.Size(144, 26);
+            this.TextureToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.TextureToolStripMenuItem.Text = "Текстура";
             this.TextureToolStripMenuItem.Click += new System.EventHandler(this.TextureToolStripMenuItem_Click);
             // 
             // RenderBtn
             // 
-            this.RenderBtn.Location = new System.Drawing.Point(16, 81);
-            this.RenderBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.RenderBtn.Location = new System.Drawing.Point(12, 66);
             this.RenderBtn.Name = "RenderBtn";
-            this.RenderBtn.Size = new System.Drawing.Size(100, 28);
+            this.RenderBtn.Size = new System.Drawing.Size(75, 23);
             this.RenderBtn.TabIndex = 2;
             this.RenderBtn.Text = "Render";
             this.RenderBtn.UseVisualStyleBackColor = true;
@@ -128,109 +125,120 @@
             // 
             // TransXtb
             // 
-            this.TransXtb.Location = new System.Drawing.Point(384, 32);
+            this.TransXtb.Location = new System.Drawing.Point(288, 26);
+            this.TransXtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.TransXtb.Name = "TransXtb";
-            this.TransXtb.Size = new System.Drawing.Size(100, 22);
+            this.TransXtb.Size = new System.Drawing.Size(76, 20);
             this.TransXtb.TabIndex = 3;
             this.TransXtb.Text = "0";
             // 
             // TransYtb
             // 
-            this.TransYtb.Location = new System.Drawing.Point(384, 60);
+            this.TransYtb.Location = new System.Drawing.Point(288, 49);
+            this.TransYtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.TransYtb.Name = "TransYtb";
-            this.TransYtb.Size = new System.Drawing.Size(100, 22);
+            this.TransYtb.Size = new System.Drawing.Size(76, 20);
             this.TransYtb.TabIndex = 4;
             this.TransYtb.Text = "0";
             // 
             // TransZtb
             // 
-            this.TransZtb.Location = new System.Drawing.Point(384, 88);
+            this.TransZtb.Location = new System.Drawing.Point(288, 72);
+            this.TransZtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.TransZtb.Name = "TransZtb";
-            this.TransZtb.Size = new System.Drawing.Size(100, 22);
+            this.TransZtb.Size = new System.Drawing.Size(76, 20);
             this.TransZtb.TabIndex = 5;
             this.TransZtb.Text = "0";
             // 
             // ScaleZtb
             // 
-            this.ScaleZtb.Location = new System.Drawing.Point(651, 88);
+            this.ScaleZtb.Location = new System.Drawing.Point(488, 72);
+            this.ScaleZtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ScaleZtb.Name = "ScaleZtb";
-            this.ScaleZtb.Size = new System.Drawing.Size(100, 22);
+            this.ScaleZtb.Size = new System.Drawing.Size(76, 20);
             this.ScaleZtb.TabIndex = 8;
             this.ScaleZtb.Text = "1";
             // 
             // ScaleYtb
             // 
-            this.ScaleYtb.Location = new System.Drawing.Point(651, 60);
+            this.ScaleYtb.Location = new System.Drawing.Point(488, 49);
+            this.ScaleYtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ScaleYtb.Name = "ScaleYtb";
-            this.ScaleYtb.Size = new System.Drawing.Size(100, 22);
+            this.ScaleYtb.Size = new System.Drawing.Size(76, 20);
             this.ScaleYtb.TabIndex = 7;
             this.ScaleYtb.Text = "1";
             // 
             // ScaleXtb
             // 
-            this.ScaleXtb.Location = new System.Drawing.Point(651, 32);
+            this.ScaleXtb.Location = new System.Drawing.Point(488, 26);
+            this.ScaleXtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ScaleXtb.Name = "ScaleXtb";
-            this.ScaleXtb.Size = new System.Drawing.Size(100, 22);
+            this.ScaleXtb.Size = new System.Drawing.Size(76, 20);
             this.ScaleXtb.TabIndex = 6;
             this.ScaleXtb.Text = "1";
             // 
             // RotZtb
             // 
-            this.RotZtb.Location = new System.Drawing.Point(901, 88);
+            this.RotZtb.Location = new System.Drawing.Point(676, 72);
+            this.RotZtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.RotZtb.Name = "RotZtb";
-            this.RotZtb.Size = new System.Drawing.Size(100, 22);
+            this.RotZtb.Size = new System.Drawing.Size(76, 20);
             this.RotZtb.TabIndex = 11;
             this.RotZtb.Text = "0";
             // 
             // RotYtb
             // 
-            this.RotYtb.Location = new System.Drawing.Point(901, 60);
+            this.RotYtb.Location = new System.Drawing.Point(676, 49);
+            this.RotYtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.RotYtb.Name = "RotYtb";
-            this.RotYtb.Size = new System.Drawing.Size(100, 22);
+            this.RotYtb.Size = new System.Drawing.Size(76, 20);
             this.RotYtb.TabIndex = 10;
             this.RotYtb.Text = "0";
             // 
             // RotXtb
             // 
-            this.RotXtb.Location = new System.Drawing.Point(901, 32);
+            this.RotXtb.Location = new System.Drawing.Point(676, 26);
+            this.RotXtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.RotXtb.Name = "RotXtb";
-            this.RotXtb.Size = new System.Drawing.Size(100, 22);
+            this.RotXtb.Size = new System.Drawing.Size(76, 20);
             this.RotXtb.TabIndex = 9;
             this.RotXtb.Text = "0";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(310, 60);
+            this.label1.Location = new System.Drawing.Point(232, 49);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(68, 17);
+            this.label1.Size = new System.Drawing.Size(51, 13);
             this.label1.TabIndex = 12;
             this.label1.Text = "Translate";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(577, 63);
+            this.label2.Location = new System.Drawing.Point(433, 51);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(43, 17);
+            this.label2.Size = new System.Drawing.Size(34, 13);
             this.label2.TabIndex = 13;
             this.label2.Text = "Scale";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(842, 63);
+            this.label3.Location = new System.Drawing.Point(632, 51);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(50, 17);
+            this.label3.Size = new System.Drawing.Size(39, 13);
             this.label3.TabIndex = 14;
             this.label3.Text = "Rotate";
             // 
             // RedrawBtn
             // 
-            this.RedrawBtn.Location = new System.Drawing.Point(124, 81);
-            this.RedrawBtn.Margin = new System.Windows.Forms.Padding(4);
+            this.RedrawBtn.Location = new System.Drawing.Point(93, 66);
             this.RedrawBtn.Name = "RedrawBtn";
-            this.RedrawBtn.Size = new System.Drawing.Size(100, 28);
+            this.RedrawBtn.Size = new System.Drawing.Size(75, 23);
             this.RedrawBtn.TabIndex = 15;
             this.RedrawBtn.Text = "ReRender";
             this.RedrawBtn.UseVisualStyleBackColor = true;
@@ -238,9 +246,9 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1036, 1008);
+            this.ClientSize = new System.Drawing.Size(777, 819);
             this.Controls.Add(this.RedrawBtn);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -257,8 +265,8 @@
             this.Controls.Add(this.RenderBtn);
             this.Controls.Add(this.PictureBox);
             this.Controls.Add(this.menuStrip1);
+            this.DoubleBuffered = true;
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).EndInit();
