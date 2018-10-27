@@ -62,7 +62,7 @@ namespace MyDrawing
             public Color GetPixel(int x, int y)
             {
                 int index = x + (y * Width);
-                if (index < Bits.Length)
+                if (index < Bits.Length && index > 0)
                 {
                     int col = Bits[index];
                     return Color.FromArgb(col);

@@ -217,7 +217,7 @@ namespace MyDrawing.D3
 
         #region TriangleDraw
 
-        private void CompleteTriangleDraw(Triangle t, int modelWidth, int modelHeight, List<Light> lights)
+        private void CompleteTriangleDraw(Triangle t, List<Light> lights)
         {
             Vector v = t.Norm;
             double A = v.X, B = v.Y, C = v.Z;
@@ -280,7 +280,7 @@ namespace MyDrawing.D3
             RenderedColors = new Color[width,height];
            
             Parallel.ForEach(Triangles, (t) =>
-                CompleteTriangleDraw(t, width, height, lights)
+                CompleteTriangleDraw(t, lights)
             );
 
         }

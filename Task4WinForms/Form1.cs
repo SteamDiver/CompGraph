@@ -42,6 +42,8 @@ namespace Task4WinForms
 
         private void ModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            path1 = "";
+            path2 = "";
             DialogResult result = openFileDialog.ShowDialog();
             if (result == DialogResult.OK)
             {
