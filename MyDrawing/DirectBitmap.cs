@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyDrawing
 {
@@ -28,6 +24,33 @@ namespace MyDrawing
                 Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
             }
 
+            public DirectBitmap(Bitmap bmp)
+            {
+                Width = bmp.Width;
+                Height = bmp.Height;
+                Bits = new Int32[bmp.Width * bmp.Height];
+                BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
+                Bitmap = new Bitmap(bmp.Width, bmp.Height, bmp.Width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
+
+                Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+                BitmapData bmpData =
+                    bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+                IntPtr ptr = bmpData.Scan0;
+                //int bytes = Math.Abs(bmpData.Stride) * bmp.Height;
+                //byte[] rgbValues = new byte[bytes];
+
+                // Copy the RGB values into the array.
+                Marshal.Copy(ptr, Bits, 0, bmp.Width * bmp.Height);
+
+                // do something with the array
+
+                // Copy the RGB values back to the bitmap
+                bmp.UnlockBits(bmpData);
+
+
+        }
+
             public void SetPixel(int x, int y, Color colour)
             {
                 int index = x + (y * Width);
@@ -39,10 +62,13 @@ namespace MyDrawing
             public Color GetPixel(int x, int y)
             {
                 int index = x + (y * Width);
-                int col = Bits[index];
-                Color result = Color.FromArgb(col);
+                if (index < Bits.Length)
+                {
+                    int col = Bits[index];
+                    return Color.FromArgb(col);
+                }
 
-                return result;
+                return Color.Red;
             }
 
             public void Dispose()

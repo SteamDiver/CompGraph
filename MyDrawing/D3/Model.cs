@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MyDrawing.D3
 {
@@ -17,12 +18,12 @@ namespace MyDrawing.D3
         public List<Triangle> Triangles { get; set; } = new List<Triangle>();
         public List<Quad> Quads { get; set; } = new List<Quad>();
         public List<Vertex2D> TextureCoordinates { get; set; } = new List<Vertex2D>();
-        public Bitmap TextureMap { get; set; }
+        public DirectBitmap TextureMap { get; set; }
         public Color[,] RenderedColors;
         public Vector Translation { get; set; } = new Vector(0, 0, 0);
         public Vector Scale { get; set; } = new Vector(1, 1, 1);
         public Vector Rotation { get; set; } = new Vector(0, 0, 0);
-        public float[,] ZBuffer;
+        public double[,] ZBuffer;
 
 
         public Model(string objPath, string texturePath = "")
@@ -40,14 +41,8 @@ namespace MyDrawing.D3
         {
             if (pathTextureImage != "")
             {
-                TextureMap = (Bitmap) Image.FromFile(pathTextureImage);
-            }
-            else
-            {
-                var bmp = new Bitmap(1, 1);
-                var g = Graphics.FromImage(bmp);
-                g.Clear(Color.Gray);
-                TextureMap = bmp;
+                var bmp = new Bitmap(Image.FromFile(pathTextureImage));
+                TextureMap = new DirectBitmap(bmp);
             }
         }
 
@@ -242,32 +237,33 @@ namespace MyDrawing.D3
                     var yResult = -y;
                     if (IsPointInsideTriangle(x, y, t, out var a,
                             out var b, out var g) && yResult > 0 && xResult > 0)
-                        if (z - ZBuffer[xResult, yResult] > 1e-20)
-                            if (TextureCoordinates.Count > 0)
+                        if (xResult <= ZBuffer.GetUpperBound(0) && yResult <= ZBuffer.GetUpperBound(1) && z - ZBuffer[xResult, yResult] > 1e-20)
+                        {
+
+                            var texel = TextureMap!= null? FindTexel(t.C1, t.C2, t.C3, a, b, g) : Color.Azure; // FindTexel(t.C1, t.C2, t.C3, a, b, g);
+                            //List<Color> texels = new List<Color>();
+                            //foreach (var light in lights)
+                            //    texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel,
+                            //        a, b, g));
+                            texel = lights[0].GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a, b, g);
+                            if (RenderedColors.GetUpperBound(0) > xResult &&
+                                yResult < RenderedColors.GetUpperBound(1))
                             {
-                                var texel = Color.Azure; // FindTexel(t.C1, t.C2, t.C3, a, b, g);
-                                List<Color> texels = new List<Color>();
-                                foreach (var light in lights)
-                                    texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel,
-                                        a, b, g));
-                                texel = texels[0];
-                                if (RenderedColors.GetUpperBound(0) >= xResult && yResult <= RenderedColors.GetUpperBound(1))
-                                {
-                                    //ModelBitmap.SetPixel(xResult, yResult, texel);
-                                    RenderedColors[xResult, yResult] = texel;
-                                    ZBuffer[xResult, yResult] = (float) z;
-                                }
+                                //ModelBitmap.SetPixel(xResult, yResult, texel);
+                                RenderedColors[xResult, yResult] = texel;
+                                ZBuffer[xResult, yResult] = z;
                             }
+                        }
                 }
             }
         }
 
         private void InitializeZBuffer(int width, int height)
         {
-            ZBuffer = new float[width, height];
+            ZBuffer = new double[width, height];
             for (var i = 0; i < ZBuffer.GetLength(0); i++)
             for (var j = 0; j < ZBuffer.GetLength(1); j++)
-                ZBuffer[i, j] = float.MinValue;
+                ZBuffer[i, j] = double.MinValue;
         }
 
         #endregion
@@ -346,7 +342,7 @@ namespace MyDrawing.D3
             var maxY = Vertices.Max(x => x.Y);
             var minY = Vertices.Min(x => x.Y);
 
-            int ampX = (int)(Math.Abs(maxX) + Math.Abs(minX) + 2), ampY = (int) (Math.Abs(maxY) + Math.Abs(minY) + 2);
+            int ampX = (int)(Math.Abs(maxX) + Math.Abs(minX)), ampY = (int) (Math.Abs(maxY) + Math.Abs(minY));
             width = ampX;
             height = ampY;
         }
