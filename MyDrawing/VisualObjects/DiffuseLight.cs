@@ -22,7 +22,7 @@ namespace MyDrawing.VisualObjects
             pNorm.Y = norm1.Y * a + norm2.Y * b + norm3.Y * g;
             pNorm.Z = norm1.Z * a + norm2.Z * b + norm3.Z * g;
             var cosVal = Vector.CosCalc(pNorm, LightVector);
-            if (cosVal < 0)
+            if (cosVal <= 0)
             {
                 return Color.FromArgb(0, 0, 0);
             }
