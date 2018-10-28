@@ -50,15 +50,17 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.RedrawBtn = new System.Windows.Forms.Button();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.SuspendLayout();
             // 
             // PictureBox
             // 
             this.PictureBox.Location = new System.Drawing.Point(12, 95);
             this.PictureBox.Name = "PictureBox";
-            this.PictureBox.Size = new System.Drawing.Size(739, 713);
+            this.PictureBox.Size = new System.Drawing.Size(1115, 713);
             this.PictureBox.TabIndex = 0;
             this.PictureBox.TabStop = false;
             this.PictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox_MouseMove);
@@ -70,7 +72,7 @@
             this.файлToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(777, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1139, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -126,7 +128,7 @@
             // TransXtb
             // 
             this.TransXtb.Location = new System.Drawing.Point(288, 26);
-            this.TransXtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.TransXtb.Margin = new System.Windows.Forms.Padding(2);
             this.TransXtb.Name = "TransXtb";
             this.TransXtb.Size = new System.Drawing.Size(76, 20);
             this.TransXtb.TabIndex = 3;
@@ -135,7 +137,7 @@
             // TransYtb
             // 
             this.TransYtb.Location = new System.Drawing.Point(288, 49);
-            this.TransYtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.TransYtb.Margin = new System.Windows.Forms.Padding(2);
             this.TransYtb.Name = "TransYtb";
             this.TransYtb.Size = new System.Drawing.Size(76, 20);
             this.TransYtb.TabIndex = 4;
@@ -144,7 +146,7 @@
             // TransZtb
             // 
             this.TransZtb.Location = new System.Drawing.Point(288, 72);
-            this.TransZtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.TransZtb.Margin = new System.Windows.Forms.Padding(2);
             this.TransZtb.Name = "TransZtb";
             this.TransZtb.Size = new System.Drawing.Size(76, 20);
             this.TransZtb.TabIndex = 5;
@@ -153,7 +155,7 @@
             // ScaleZtb
             // 
             this.ScaleZtb.Location = new System.Drawing.Point(488, 72);
-            this.ScaleZtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ScaleZtb.Margin = new System.Windows.Forms.Padding(2);
             this.ScaleZtb.Name = "ScaleZtb";
             this.ScaleZtb.Size = new System.Drawing.Size(76, 20);
             this.ScaleZtb.TabIndex = 8;
@@ -162,7 +164,7 @@
             // ScaleYtb
             // 
             this.ScaleYtb.Location = new System.Drawing.Point(488, 49);
-            this.ScaleYtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ScaleYtb.Margin = new System.Windows.Forms.Padding(2);
             this.ScaleYtb.Name = "ScaleYtb";
             this.ScaleYtb.Size = new System.Drawing.Size(76, 20);
             this.ScaleYtb.TabIndex = 7;
@@ -171,7 +173,7 @@
             // ScaleXtb
             // 
             this.ScaleXtb.Location = new System.Drawing.Point(488, 26);
-            this.ScaleXtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ScaleXtb.Margin = new System.Windows.Forms.Padding(2);
             this.ScaleXtb.Name = "ScaleXtb";
             this.ScaleXtb.Size = new System.Drawing.Size(76, 20);
             this.ScaleXtb.TabIndex = 6;
@@ -180,7 +182,7 @@
             // RotZtb
             // 
             this.RotZtb.Location = new System.Drawing.Point(676, 72);
-            this.RotZtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.RotZtb.Margin = new System.Windows.Forms.Padding(2);
             this.RotZtb.Name = "RotZtb";
             this.RotZtb.Size = new System.Drawing.Size(76, 20);
             this.RotZtb.TabIndex = 11;
@@ -189,7 +191,7 @@
             // RotYtb
             // 
             this.RotYtb.Location = new System.Drawing.Point(676, 49);
-            this.RotYtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.RotYtb.Margin = new System.Windows.Forms.Padding(2);
             this.RotYtb.Name = "RotYtb";
             this.RotYtb.Size = new System.Drawing.Size(76, 20);
             this.RotYtb.TabIndex = 10;
@@ -198,7 +200,7 @@
             // RotXtb
             // 
             this.RotXtb.Location = new System.Drawing.Point(676, 26);
-            this.RotXtb.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.RotXtb.Margin = new System.Windows.Forms.Padding(2);
             this.RotXtb.Name = "RotXtb";
             this.RotXtb.Size = new System.Drawing.Size(76, 20);
             this.RotXtb.TabIndex = 9;
@@ -244,11 +246,23 @@
             this.RedrawBtn.UseVisualStyleBackColor = true;
             this.RedrawBtn.Click += new System.EventHandler(this.RedrawBtn_Click);
             // 
+            // trackBar1
+            // 
+            this.trackBar1.Location = new System.Drawing.Point(757, 44);
+            this.trackBar1.Maximum = 10000;
+            this.trackBar1.Minimum = 1;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(370, 45);
+            this.trackBar1.TabIndex = 16;
+            this.trackBar1.Value = 4000;
+            this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(777, 819);
+            this.ClientSize = new System.Drawing.Size(1139, 819);
+            this.Controls.Add(this.trackBar1);
             this.Controls.Add(this.RedrawBtn);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -272,6 +286,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -301,6 +316,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button RedrawBtn;
+        private System.Windows.Forms.TrackBar trackBar1;
     }
 }
 

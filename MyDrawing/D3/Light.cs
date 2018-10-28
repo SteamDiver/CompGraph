@@ -25,7 +25,6 @@ namespace MyDrawing.D3
         public Light(Vector lihgtVector)
         {
             LightVector = lihgtVector;
-           
         }
 
         public abstract Color GetPixelColor(Vector norm1, Vector norm2, Vector norm3, Color texel, double a, double b, double g);

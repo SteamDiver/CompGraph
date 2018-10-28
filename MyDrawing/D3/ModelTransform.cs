@@ -74,7 +74,7 @@ namespace MyDrawing.D3
 
         public static MatrixVector CoordAfterTransformation(MatrixVector xyz, Matrix3D mScale, Matrix3D mTranslate, Matrix3D mRotate, Matrix3D mProj)
         {
-            MatrixVector result = mTranslate * (mRotate * (mScale * xyz));
+            MatrixVector result = mProj * (mTranslate * (mRotate * (mScale * xyz)));
             
             result.X /= result.W;
             result.Y /= result.W;

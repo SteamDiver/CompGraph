@@ -9,13 +9,26 @@ using MyDrawing.D3;
 
 namespace MyDrawing.VisualObjects
 {
-    public class DiffuseLight : Light
+    public class DirectionalLight : Light
     {
-        public DiffuseLight(Vector lightVector) : base(lightVector)
+        public LightType LightT { get; set; }
+        public DirectionalLight(LightType type, Vector lightVector) : base(lightVector)
         {
+            LightT = type;
         }
 
         public override Color GetPixelColor(Vector norm1, Vector norm2, Vector norm3, Color texel, double a, double b, double g)
+        {
+            switch (LightT)
+            {
+                case LightType.Diffuse:
+                    return GetDiffuseColor(norm1, norm2, norm3, texel, a, b, g);
+                default:
+                    return texel;
+            }
+        }
+
+        private Color GetDiffuseColor(Vector norm1, Vector norm2, Vector norm3, Color texel, double a, double b, double g)
         {
             Vector pNorm; //нормаль для данного пикселя
             pNorm.X = norm1.X * a + norm2.X * b + norm3.X * g;
@@ -26,8 +39,8 @@ namespace MyDrawing.VisualObjects
             {
                 return Color.FromArgb(0, 0, 0);
             }
-            var newColor = Color.FromArgb((int) (texel.R * cosVal), (int) (texel.G * cosVal),
-                (int) (texel.B * cosVal));
+            var newColor = Color.FromArgb((int)(texel.R * cosVal), (int)(texel.G * cosVal),
+                (int)(texel.B * cosVal));
             return newColor;
         }
     }

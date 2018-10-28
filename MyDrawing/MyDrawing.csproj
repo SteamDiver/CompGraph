@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="D3\Camera.cs" />
     <Compile Include="DirectBitmap.cs" />
-    <Compile Include="VisualObjects\DiffuseLight.cs" />
+    <Compile Include="VisualObjects\DirectionalLight.cs" />
     <Compile Include="D3\Light.cs" />
     <Compile Include="D3\Model.cs" />
     <Compile Include="D3\ModelTransform.cs" />

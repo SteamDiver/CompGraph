@@ -11,4 +11,9 @@ namespace MyDrawing
         Standart,
         Custom
     }
+
+    public enum LightType
+    {
+        Diffuse
+    }
 }

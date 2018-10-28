@@ -20,17 +20,16 @@ namespace Task4WinForms
         private Drawer _drawer;
         private Bitmap _bmp;
 
-        private string path1 = "";
-        private string path2 = "";
+        private string _modelPath = "";
+        private string _texturePath = "";
 
-        private Scene scene;
-        private Model alex;
+        private Scene _scene;
+        private Model _model;
 
-        private List<Light> lights = new List<Light>()
+        private readonly List<Light> _lights = new List<Light>()
         {
-            new DiffuseLight(new Vector(0, 0, 1)),
-            //new DiffuseLight(new Vector(1, 1, 1)),
-
+            new DirectionalLight(LightType.Diffuse, new Vector(0, 0, 1)),
+            new DirectionalLight(LightType.Diffuse, new Vector(1, 1, 1)),
         };
 
         public Form1()
@@ -45,12 +44,11 @@ namespace Task4WinForms
 
         private void ModelToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            path1 = "";
-            path2 = "";
             DialogResult result = openFileDialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                path1 = openFileDialog.FileName;
+                _texturePath = "";
+                _modelPath = openFileDialog.FileName;
             }
         }
 
@@ -59,7 +57,7 @@ namespace Task4WinForms
             DialogResult result = TextureOpenFileDialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                path2 = TextureOpenFileDialog.FileName;
+                _texturePath = TextureOpenFileDialog.FileName;
             }
         }
 
@@ -74,17 +72,17 @@ namespace Task4WinForms
             Vector scale = new Vector(1, 1, 1);
             Vector rotation = new Vector(0, 0, 0);
 
-            alex = new Model(path1, path2)
+            _model = new Model(_modelPath, _texturePath)
             {
                 Translation = translate,
                 Scale = scale,
                 Rotation = rotation
             };
 
-            scene = new Scene(_bmp, alex, lights, new Camera(new Vector(0, 0, 1)), new Point(PictureBox.Width / 2, -PictureBox.Height / 2));
+            _scene = new Scene(_bmp, _model, _lights, new Camera(new Vector(0, 0, 1)), new Point(PictureBox.Width / 2, -PictureBox.Height / 2));
 
             PictureBox.SizeMode = PictureBoxSizeMode.Normal;
-            PictureBox.Image = scene.RenderScene();
+            PictureBox.Image = _scene.RenderScene();
 
         }
 
@@ -104,45 +102,54 @@ namespace Task4WinForms
             Vector scale = new Vector(scaleX, scaleY, scaleZ);
             Vector rotation = new Vector(rotX, rotY, rotZ);
 
-            scene.Model.Translation = translate;
-            scene.Model.Scale = scale;
-            scene.Model.Rotation = rotation;
+            _scene.Model.Translation = translate;
+            _scene.Model.Scale = scale;
+            _scene.Model.Rotation = rotation;
 
-            var bmp = scene.RenderScene();
+            var bmp = _scene.RenderScene();
             PictureBox.Image = bmp;
             //bmp.Save("save.jpg");
         }
 
-        private Vertex prevPoint;
+        private Vertex _prevPoint;
         private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             var curPoint = new Vertex(e.X, e.Y, 0);
-            if (prevPoint != null && scene != null)
+            if (_prevPoint != null && _scene != null)
             {
                 if ((e.Button & MouseButtons.Left) != 0)
                 {
-                    Vertex v1 = new Vertex(prevPoint.Y / 100, prevPoint.X / 100, 0);
+                    Vertex v1 = new Vertex(_prevPoint.Y / 100, _prevPoint.X / 100, 0);
                     Vertex v2 = new Vertex(curPoint.Y / 100, curPoint.X / 100, 0);
                     var rotateVector = new Vector(v1, v2);
-                    scene.Model.Rotation += rotateVector;
+                    _scene.Model.Rotation += rotateVector;
+                    PictureBox.Image = _scene.RenderScene();
                 }
 
                 if ((e.Button & MouseButtons.Middle) != 0)
                 {
-                    Vertex v1 = new Vertex(-prevPoint.X, prevPoint.Y, 0);
+                    Vertex v1 = new Vertex(-_prevPoint.X, _prevPoint.Y, 0);
                     Vertex v2 = new Vertex(-curPoint.X, curPoint.Y, 0);
-                    scene.Model.Translation += new Vector(v1, v2);
+                    _scene.Model.Translation += new Vector(v1, v2);
+                    PictureBox.Image = _scene.RenderScene();
                 }
-
-                PictureBox.Image = scene.RenderScene();
             }
 
-            prevPoint = curPoint;
+            _prevPoint = curPoint;
         }
 
         private void Form1_Scroll(object sender, ScrollEventArgs e)
         {
 
+        }
+
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            if (_scene != null)
+            {
+                _scene.Camera.ProjectionValue = trackBar1.Value;
+                PictureBox.Image = _scene.RenderScene();
+            }
         }
     }
 }

@@ -239,12 +239,13 @@ namespace MyDrawing.D3
                             out var b, out var g) && yResult > 0 && xResult > 0)
                         if (z > ZBuffer[xResult, yResult])
                         {
-                            var texel = TextureMap!= null? FindTexel(t.C1, t.C2, t.C3, a, b, g) : Color.CornflowerBlue ; // FindTexel(t.C1, t.C2, t.C3, a, b, g);
-                            //List<Color> texels = new List<Color>();
-                            //foreach (var light in lights)
-                            //    texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel,
-                            //        a, b, g));
-                            texel = lights[0].GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a, b, g);
+                            var texel = TextureMap!= null? FindTexel(t.C1, t.C2, t.C3, a, b, g) : Color.CornflowerBlue ;
+
+                            List<Color> texels = new List<Color>();
+                            foreach (var light in lights)
+                                texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel,
+                                    a, b, g));
+                            texel = Light.GetItogTexel(texels);
 
                             if (RenderedColors.Bits.Length > xResult * yResult)
                             {
@@ -305,26 +306,26 @@ namespace MyDrawing.D3
         /// <param name="projectValues"></param>
         /// <returns></returns>
         private MatrixVector TransformCoordinates(MatrixVector vertexCoord, Vector translate, Vector scale,
-            Vector rotation)
+            Vector rotation, double projectionValue)
         {
             return ModelTransform.CoordAfterTransformation(vertexCoord, ModelTransform.GetScaleMatrix(scale),
-                ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation), ModelTransform.GetProjectionMatrix(1000));
+                ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation), ModelTransform.GetProjectionMatrix(projectionValue));
         }
 
-        private void TransformModel(Vector translation, Vector scale, Vector rotation)
+        private void TransformModel(Vector translation, Vector scale, Vector rotation, double prijectionValue)
         {
             foreach (var v in Vertices)
             {
-                var coordVector = TransformCoordinates(v.CoordVector, translation, scale, rotation);
+                var coordVector = TransformCoordinates(v.CoordVector, translation, scale, rotation, prijectionValue);
                 v.X = coordVector.X;
                 v.Y = coordVector.Y;
                 v.Z = coordVector.Z;
             }
         }
 
-        internal Bitmap Draw(Bitmap bmp, List<Light> lights, Point worldCenter)
+        internal Bitmap Draw(Bitmap bmp, List<Light> lights, Point worldCenter, Camera camera)
         {
-            TransformModel(Translation + new Vector(worldCenter.X, worldCenter.Y, 0), Scale, Rotation);
+            TransformModel(Translation + new Vector(worldCenter.X, worldCenter.Y, 0), Scale, Rotation, camera.ProjectionValue);
             CompleteModelDraw(lights);
             var ret = new Bitmap(RenderedColors.Bitmap);
             RenderedColors.Dispose();
