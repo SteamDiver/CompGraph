@@ -23,7 +23,7 @@ namespace MyDrawing.D3
         public Vector Translation { get; set; } = new Vector(0, 0, 0);
         public Vector Scale { get; set; } = new Vector(1, 1, 1);
         public Vector Rotation { get; set; } = new Vector(0, 0, 0);
-        public float[,] ZBuffer { get; set; } = new float[3000, 3000];
+        public float[,] ZBuffer { get; set; } 
 
         public Model(string objPath, string texturePath = "")
         {
@@ -262,10 +262,11 @@ namespace MyDrawing.D3
 
         private void InitializeZBuffer(int width, int height)
         {
+            ZBuffer = new float[width, height];
             for (var i = 0; i < width; i++)
             {
                 for (var j = 0; j < height; j++)
-                    ZBuffer[i, j] = -1000;
+                    ZBuffer[i, j] = float.MinValue;
             }
             Debug.WriteLine(ZBuffer.Length);
         }

@@ -117,15 +117,26 @@ namespace Task4WinForms
         private void PictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             var curPoint = new Vertex(e.X, e.Y, 0);
-
-            if ((e.Button & MouseButtons.Left) != 0 && prevPoint.X != null && scene != null) 
+            if (prevPoint != null && scene != null)
             {
+                if ((e.Button & MouseButtons.Left) != 0)
+                {
                     Vertex v1 = new Vertex(prevPoint.Y / 100, prevPoint.X / 100, 0);
                     Vertex v2 = new Vertex(curPoint.Y / 100, curPoint.X / 100, 0);
-                    var rotateVector = new Vector(v1, v2) + scene.Model.Rotation ;
-                    scene.Model.Rotation = rotateVector;
-                    PictureBox.Image = scene.RenderScene();
+                    var rotateVector = new Vector(v1, v2);
+                    scene.Model.Rotation += rotateVector;
+                }
+
+                if ((e.Button & MouseButtons.Middle) != 0)
+                {
+                    Vertex v1 = new Vertex(-prevPoint.X, prevPoint.Y, 0);
+                    Vertex v2 = new Vertex(-curPoint.X, curPoint.Y, 0);
+                    scene.Model.Translation += new Vector(v1, v2);
+                }
+
+                PictureBox.Image = scene.RenderScene();
             }
+
             prevPoint = curPoint;
         }
 
