@@ -8,7 +8,7 @@ namespace MyDrawing
         public class DirectBitmap : IDisposable
         {
             public Bitmap Bitmap { get; private set; }
-            public Int32[] Bits { get; private set; }
+            public int[] Bits { get; private set; }
             public bool Disposed { get; private set; }
             public int Height { get; private set; }
             public int Width { get; private set; }
@@ -19,7 +19,7 @@ namespace MyDrawing
             {
                 Width = width;
                 Height = height;
-                Bits = new Int32[width * height];
+                Bits = new int[width * height];
                 BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
                 Bitmap = new Bitmap(width, height, width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
             }
@@ -28,28 +28,16 @@ namespace MyDrawing
             {
                 Width = bmp.Width;
                 Height = bmp.Height;
-                Bits = new Int32[bmp.Width * bmp.Height];
+                Bits = new int[bmp.Width * bmp.Height];
                 BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
                 Bitmap = new Bitmap(bmp.Width, bmp.Height, bmp.Width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
 
                 Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
-                BitmapData bmpData =
-                    bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
-
+                BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
                 IntPtr ptr = bmpData.Scan0;
-                //int bytes = Math.Abs(bmpData.Stride) * bmp.Height;
-                //byte[] rgbValues = new byte[bytes];
-
-                // Copy the RGB values into the array.
                 Marshal.Copy(ptr, Bits, 0, bmp.Width * bmp.Height);
-
-                // do something with the array
-
-                // Copy the RGB values back to the bitmap
                 bmp.UnlockBits(bmpData);
-
-
-        }
+            }
 
             public void SetPixel(int x, int y, Color colour)
             {

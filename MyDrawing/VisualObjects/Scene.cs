@@ -31,7 +31,7 @@ namespace MyDrawing.VisualObjects
 
         public Bitmap RenderScene()
         {
-            return Model.Draw( Bmp, Lights, WorldCenter);
+            return Model.Draw(Bmp, Lights, WorldCenter);
         }
     }
 }

@@ -135,7 +135,7 @@ namespace MyDrawing.D3
         } 
     }
 
-    public class Triangle
+    public struct Triangle
     {
         public Vertex V1;
         public Vertex V2;

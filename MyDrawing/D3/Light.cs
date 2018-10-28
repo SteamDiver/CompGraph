@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MyDrawing.VisualObjects;
 
 namespace MyDrawing.D3
 {
@@ -34,5 +35,7 @@ namespace MyDrawing.D3
             return Color.FromArgb(texels.Sum(t => t.R) / texels.Count, texels.Sum(t => t.G) / texels.Count,
                 texels.Sum(t => t.B) / texels.Count);
         }
+
+        
     }
 }

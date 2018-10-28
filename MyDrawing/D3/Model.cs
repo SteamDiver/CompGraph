@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -13,18 +14,16 @@ namespace MyDrawing.D3
 {
     public class Model
     {
-        public List<Vertex> Vertices { get;
-            set; } = new List<Vertex>();
+        public List<Vertex> Vertices { get; set; } = new List<Vertex>();
         public List<Triangle> Triangles { get; set; } = new List<Triangle>();
         public List<Quad> Quads { get; set; } = new List<Quad>();
         public List<Vertex2D> TextureCoordinates { get; set; } = new List<Vertex2D>();
         public DirectBitmap TextureMap { get; set; }
-        public DirectBitmap RenderedColors;
+        public DirectBitmap RenderedColors { get; set; }
         public Vector Translation { get; set; } = new Vector(0, 0, 0);
         public Vector Scale { get; set; } = new Vector(1, 1, 1);
         public Vector Rotation { get; set; } = new Vector(0, 0, 0);
-        public double[,] ZBuffer;
-
+        public float[,] ZBuffer { get; set; } = new float[3000, 3000];
 
         public Model(string objPath, string texturePath = "")
         {
@@ -189,9 +188,7 @@ namespace MyDrawing.D3
             alpha = beta = gamma = 0;
             var denominator = (t.V2.Y - t.V3.Y) * (t.V1.X - t.V3.X) + (t.V3.X - t.V2.X) * (t.V1.Y - t.V3.Y);
             alpha = ((t.V2.Y - t.V3.Y) * (x - t.V3.X) + (t.V3.X - t.V2.X) * (y - t.V3.Y)) / denominator;
-            if (alpha < 0 || alpha > 1) return false;
             beta = ((t.V3.Y - t.V1.Y) * (x - t.V3.X) + (t.V1.X - t.V3.X) * (y - t.V3.Y)) / denominator;
-            if (beta < 0 || beta > 1) return false;
             gamma = 1 - alpha - beta;
             return alpha >= 0 && alpha <= 1 && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1;
         }
@@ -240,20 +237,19 @@ namespace MyDrawing.D3
                     var yResult = -y;
                     if (IsPointInsideTriangle(x, y, t, out var a,
                             out var b, out var g) && yResult > 0 && xResult > 0)
-                        if (xResult <= ZBuffer.GetUpperBound(0) && yResult <= ZBuffer.GetUpperBound(1) && z > ZBuffer[xResult, yResult])
+                        if (z > ZBuffer[xResult, yResult])
                         {
-
                             var texel = TextureMap!= null? FindTexel(t.C1, t.C2, t.C3, a, b, g) : Color.CornflowerBlue ; // FindTexel(t.C1, t.C2, t.C3, a, b, g);
                             //List<Color> texels = new List<Color>();
                             //foreach (var light in lights)
                             //    texels.Add(light.GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel,
                             //        a, b, g));
                             texel = lights[0].GetPixelColor(t.V1.VNormal, t.V2.VNormal, t.V3.VNormal, texel, a, b, g);
+
                             if (RenderedColors.Bits.Length > xResult * yResult)
                             {
-                                //ModelBitmap.SetPixel(xResult, yResult, texel);
                                 RenderedColors.SetPixel(xResult, yResult, texel);
-                                ZBuffer[xResult, yResult] = z;
+                                ZBuffer[xResult, yResult] = (float)z;
                             }
                         }
                         else
@@ -266,10 +262,12 @@ namespace MyDrawing.D3
 
         private void InitializeZBuffer(int width, int height)
         {
-            ZBuffer = new double[2 * width, 2 * height];
-            for (var i = 0; i < ZBuffer.GetLength(0); i++)
-            for (var j = 0; j < ZBuffer.GetLength(1); j++)
-                ZBuffer[i, j] = double.MinValue;
+            for (var i = 0; i < width; i++)
+            {
+                for (var j = 0; j < height; j++)
+                    ZBuffer[i, j] = -1000;
+            }
+            Debug.WriteLine(ZBuffer.Length);
         }
 
         #endregion
@@ -284,11 +282,10 @@ namespace MyDrawing.D3
             FindAreaSize(out var width, out var height);
             InitializeZBuffer(width, height);
             RenderedColors = new DirectBitmap(width,height);
-           
+
             Parallel.ForEach(Triangles, (t) =>
                 CompleteTriangleDraw(t, lights)
             );
-
         }
 
         #endregion
@@ -298,7 +295,7 @@ namespace MyDrawing.D3
         //========================ТРАНСФОРМАЦИЯ МОДЕЛИ===================================
 
         /// <summary>
-        ///     Находим координаты для вершины после трансформации
+        /// Находим координаты для вершины после трансформации
         /// </summary>
         /// <param name="vertexCoord"></param>
         /// <param name="translate"></param>
@@ -322,29 +319,15 @@ namespace MyDrawing.D3
                 v.Y = coordVector.Y;
                 v.Z = coordVector.Z;
             }
-        } //Обращаем все координаты
+        }
 
         internal Bitmap Draw(Bitmap bmp, List<Light> lights, Point worldCenter)
         {
             TransformModel(Translation + new Vector(worldCenter.X, worldCenter.Y, 0), Scale, Rotation);
             CompleteModelDraw(lights);
-            //DirectBitmap b = new DirectBitmap(bmp.Width, bmp.Height);
-            //Parallel.For(0, RenderedColors.GetUpperBound(0),
-            //    (i) =>
-            //    {
-            //        Parallel.For(0, RenderedColors.GetUpperBound(1),
-            //            (j) => { b.SetPixel(i, j, RenderedColors[i, j]); });
-            //    });
-            //for (int i = 0; i < RenderedColors.GetUpperBound(0); i++)
-            //{
-            //    for (int j = 0; j < RenderedColors.GetUpperBound(1); j++)
-            //    {
-            //        if (i < b.Width && j < b.Height)
-            //            b.SetPixel(i, j, RenderedColors[i, j]);
-            //    }
-            //}
-
-            return RenderedColors.Bitmap;
+            var ret = new Bitmap(RenderedColors.Bitmap);
+            RenderedColors.Dispose();
+            return ret;
         }
 
         private void FindAreaSize(out int width, out int height)

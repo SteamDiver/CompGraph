@@ -24,6 +24,7 @@ namespace Task4WinForms
         private string path2 = "";
 
         private Scene scene;
+        private Model alex;
 
         private List<Light> lights = new List<Light>()
         {
@@ -38,6 +39,8 @@ namespace Task4WinForms
             _bmp = new Bitmap(PictureBox.Width, PictureBox.Height);
             _drawer = new Drawer(PictureBox, _bmp, DrawType.Standart);
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+
         }
 
         private void ModelToolStripMenuItem_Click(object sender, EventArgs e)
@@ -71,16 +74,18 @@ namespace Task4WinForms
             Vector scale = new Vector(1, 1, 1);
             Vector rotation = new Vector(0, 0, 0);
 
-
-            Model alex = new Model(path1, path2)
+            alex = new Model(path1, path2)
             {
                 Translation = translate,
                 Scale = scale,
                 Rotation = rotation
             };
+
             scene = new Scene(_bmp, alex, lights, new Camera(new Vector(0, 0, 1)), new Point(PictureBox.Width / 2, -PictureBox.Height / 2));
+
             PictureBox.SizeMode = PictureBoxSizeMode.Normal;
             PictureBox.Image = scene.RenderScene();
+
         }
 
         private void RedrawBtn_Click(object sender, EventArgs e)
@@ -105,7 +110,7 @@ namespace Task4WinForms
 
             var bmp = scene.RenderScene();
             PictureBox.Image = bmp;
-            bmp.Save("save.jpg");
+            //bmp.Save("save.jpg");
         }
 
         private Vertex prevPoint;
@@ -113,7 +118,7 @@ namespace Task4WinForms
         {
             var curPoint = new Vertex(e.X, e.Y, 0);
 
-            if ((e.Button & MouseButtons.Left) != 0 && prevPoint != null && scene != null) 
+            if ((e.Button & MouseButtons.Left) != 0 && prevPoint.X != null && scene != null) 
             {
                     Vertex v1 = new Vertex(prevPoint.Y / 100, prevPoint.X / 100, 0);
                     Vertex v2 = new Vertex(curPoint.Y / 100, curPoint.X / 100, 0);
