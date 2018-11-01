@@ -29,7 +29,7 @@ namespace Task4WinForms
         private readonly List<Light> _lights = new List<Light>()
         {
             new DirectionalLight(LightType.Diffuse, new Vector(0, 0, 1)),
-            new DirectionalLight(LightType.Diffuse, new Vector(1, 1, 1)),
+            new DirectionalLight(LightType.Diffuse, new Vector(0, 1, 0)),
         };
 
         public Form1()
@@ -136,11 +136,6 @@ namespace Task4WinForms
             }
 
             _prevPoint = curPoint;
-        }
-
-        private void Form1_Scroll(object sender, ScrollEventArgs e)
-        {
-
         }
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)

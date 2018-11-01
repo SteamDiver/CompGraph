@@ -237,7 +237,7 @@ namespace MyDrawing.D3
                     var yResult = -y;
                     if (IsPointInsideTriangle(x, y, t, out var a,
                             out var b, out var g) && yResult > 0 && xResult > 0)
-                        if (z > ZBuffer[xResult, yResult])
+                        if (xResult <= ZBuffer.GetUpperBound(0) && yResult <= ZBuffer.GetUpperBound(1) && z > ZBuffer[xResult, yResult])
                         {
                             var texel = TextureMap!= null? FindTexel(t.C1, t.C2, t.C3, a, b, g) : Color.CornflowerBlue ;
 
@@ -303,12 +303,12 @@ namespace MyDrawing.D3
         /// <param name="translate"></param>
         /// <param name="scale"></param>
         /// <param name="rotation"></param>
-        /// <param name="projectValues"></param>
+        /// <param name="projectionValue"></param>
         /// <returns></returns>
         private MatrixVector TransformCoordinates(MatrixVector vertexCoord, Vector translate, Vector scale,
             Vector rotation, double projectionValue)
         {
-            return ModelTransform.CoordAfterTransformation(vertexCoord, ModelTransform.GetScaleMatrix(scale),
+            return ModelTransform.TransformModel(vertexCoord, ModelTransform.GetScaleMatrix(scale),
                 ModelTransform.GetTranslateMatrix(translate), ModelTransform.GetRotationMatrix(rotation), ModelTransform.GetProjectionMatrix(projectionValue));
         }
 
